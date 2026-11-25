@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next';
 import Link from 'next/link';
 import { signOutAction } from './signin/actions';
+import { DemoBanner } from '@/components/DemoBanner';
 import { getUser } from '@/lib/session';
 import './globals.css';
 
@@ -15,6 +16,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   return (
     <html lang="en">
       <body className="flex min-h-screen flex-col">
+        <DemoBanner />
         <header className="border-b border-line bg-surface">
           <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
             <Link href="/" className="flex items-center gap-3 text-ink no-underline">

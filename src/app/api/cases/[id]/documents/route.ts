@@ -4,6 +4,7 @@ import { HttpError } from '@/lib/access';
 import { refreshAttention } from '@/lib/cases';
 import { api } from '@/lib/http';
 import { IngestError, ingestDocument, listDocuments } from '@/lib/ingest';
+import { enforceRateLimit } from '@/lib/ratelimit';
 import { requireCase } from '@/lib/session';
 
 export const dynamic = 'force-dynamic';
@@ -21,6 +22,7 @@ export const GET = api(async (_req: Request, ctx: { params: Promise<{ id: string
 /** multipart/form-data: file, kind?. Re-uploading identical bytes returns 200 with duplicate=true. */
 export const POST = api(async (req: Request, ctx: { params: Promise<{ id: string }> }) => {
   const { id } = await ctx.params;
+  await enforceRateLimit('upload');
   const { user, db } = await requireCase(id, 'write');
   let form: FormData;
   try {
@@ -29,7 +31,7 @@ export const POST = api(async (req: Request, ctx: { params: Promise<{ id: string
     throw new HttpError(400, 'Expected multipart form data');
   }
   const file = form.get('file');
-  if (!(file instanceof File)) throw new IngestError('Missing file');
+  if (!(file instanceof File)) throw new IngestError('Missing file', 400, 'choose_file');
   const kind = z.string().max(40).catch('other').parse(form.get('kind') ?? 'other');
   const { document, duplicate } = await ingestDocument(db, {
     caseId: id,

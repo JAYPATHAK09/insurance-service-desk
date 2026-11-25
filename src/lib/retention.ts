@@ -51,10 +51,21 @@ export async function applyRetention(db: Db, now = new Date(), actorId?: string)
   return { deleted, days, cutoff: cutoff.toISOString() };
 }
 
-/** Idempotent per calendar day. */
-export function runRetentionJob(db: Db, now = new Date(), actorId?: string) {
+/** Key part that changes whenever the effective policy does: 0 = no stored policy (env/default days). */
+export async function retentionPolicyStamp(db: Db, scope: 'documents' | 'audit' = 'documents'): Promise<number> {
+  const [row] = await db.select({ updatedAt: retentionPolicy.updatedAt }).from(retentionPolicy).where(eq(retentionPolicy.scope, scope));
+  return row?.updatedAt.getTime() ?? 0;
+}
+
+/**
+ * Idempotent per calendar day AND per effective policy (days + when it was last set): shortening the
+ * retention period the same day is a new run, not a replay of the earlier, longer-period result.
+ */
+export async function runRetentionJob(db: Db, now = new Date(), actorId?: string) {
+  const days = await getRetentionDays(db, 'documents');
+  const stamp = await retentionPolicyStamp(db, 'documents');
   return runJob(db, {
-    idempotencyKey: `retention:${now.toISOString().slice(0, 10)}`,
+    idempotencyKey: `retention:${now.toISOString().slice(0, 10)}:${days}:${stamp}`,
     type: 'retention',
     run: () => applyRetention(db, now, actorId),
   });

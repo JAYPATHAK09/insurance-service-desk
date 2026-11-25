@@ -4,6 +4,15 @@ import { IngestError } from './ingest';
 import { log } from './log';
 import { WorkflowError } from './workflow';
 
+/** State-changing JSON endpoints: require application/json and, when the browser sends Origin, same-origin. */
+export function assertJsonSameOrigin(req: Request): void {
+  const type = req.headers.get('content-type')?.split(';')[0]?.trim().toLowerCase();
+  if (type !== 'application/json') throw new HttpError(415, 'Content-Type must be application/json');
+  const origin = req.headers.get('origin');
+  // Cross-site browser posts always carry Origin (possibly the literal "null"); non-browser clients send none.
+  if (origin !== null && origin !== new URL(req.url).origin) throw new HttpError(403, 'Cross-origin request refused');
+}
+
 /** Wrap a route handler: maps domain errors to status codes and never leaks internals. */
 export function api<A extends unknown[]>(fn: (...args: A) => Promise<Response>) {
   return async (...args: A): Promise<Response> => {

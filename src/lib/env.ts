@@ -22,7 +22,23 @@ export function downloadLinkTtlSeconds(): number {
   return Number.isFinite(n) && n > 0 ? Math.min(n, 3600) : 300;
 }
 
+/** Public demo switch: DEMO_PUBLIC=true locks the app to fictional data and tighter limits. */
+export function isDemoPublic(): boolean {
+  return process.env.DEMO_PUBLIC === 'true';
+}
+
+export const DEMO_BANNER_TEXT = 'Fictional data only, public demo';
+export const DEMO_MAX_FILES_PER_CASE = 5;
+export const DEMO_MAX_UPLOAD_BYTES = 2 * 1024 * 1024;
+export const MAX_PDF_PAGES = 200;
+
 export function maxUploadBytes(): number {
+  if (isDemoPublic()) return DEMO_MAX_UPLOAD_BYTES;
   const n = Number(process.env.MAX_UPLOAD_BYTES);
   return Number.isFinite(n) && n > 0 ? n : 10 * 1024 * 1024;
+}
+
+/** Cookie name: `__Host-` prefix (Secure, Path=/, no Domain) in production, plain in dev. */
+export function sessionCookieName(): string {
+  return process.env.NODE_ENV === 'production' ? '__Host-isd_session' : 'isd_session';
 }

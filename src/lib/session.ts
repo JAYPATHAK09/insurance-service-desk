@@ -5,9 +5,8 @@ import { getDb, type Db } from '@/db/client';
 import { users } from '@/db/schema';
 import { HttpError, requireCaseAccess, requireRoleOf, type AccessMode, type SessionUser } from './access';
 import type { Role } from './contracts';
-import { derivedSecret } from './env';
+import { derivedSecret, sessionCookieName } from './env';
 
-export const SESSION_COOKIE = 'isd_session';
 const SESSION_TTL_SECONDS = 8 * 3600;
 
 const mac = (payload: string) => createHmac('sha256', derivedSecret('session')).update(payload).digest('base64url');
@@ -33,7 +32,8 @@ export function verifySession(token: string | undefined, now = Date.now()): stri
 }
 
 export async function setSessionCookie(userId: string): Promise<void> {
-  (await cookies()).set(SESSION_COOKIE, signSession(userId), {
+  // __Host- cookies must be Secure, Path=/ and carry no Domain attribute (none is set here).
+  (await cookies()).set(sessionCookieName(), signSession(userId), {
     httpOnly: true,
     sameSite: 'lax',
     secure: process.env.NODE_ENV === 'production',
@@ -43,11 +43,11 @@ export async function setSessionCookie(userId: string): Promise<void> {
 }
 
 export async function clearSessionCookie(): Promise<void> {
-  (await cookies()).delete(SESSION_COOKIE);
+  (await cookies()).delete(sessionCookieName());
 }
 
 export async function getUser(): Promise<SessionUser | null> {
-  const id = verifySession((await cookies()).get(SESSION_COOKIE)?.value);
+  const id = verifySession((await cookies()).get(sessionCookieName())?.value);
   if (!id) return null;
   const db = await getDb();
   const [u] = await db.select().from(users).where(eq(users.id, id));

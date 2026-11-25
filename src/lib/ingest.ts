@@ -1,10 +1,10 @@
 import { createHash } from 'node:crypto';
-import { and, eq } from 'drizzle-orm';
+import { and, count, eq } from 'drizzle-orm';
 import type { Db } from '@/db/client';
 import { documents } from '@/db/schema';
 import type { DocumentRecord, PageText } from './contracts';
 import { audit } from './audit';
-import { maxUploadBytes } from './env';
+import { DEMO_MAX_FILES_PER_CASE, MAX_PDF_PAGES, isDemoPublic, maxUploadBytes } from './env';
 import { getOcrAdapter, type OcrAdapter } from './ocr';
 import { getStorage, type ObjectStorage } from './storage';
 
@@ -29,6 +29,8 @@ export class IngestError extends Error {
   constructor(
     message: string,
     public status = 400,
+    /** Short code mapped to fixed UI text (see messages.ts). */
+    public code = 'ingest_failed',
   ) {
     super(message);
   }
@@ -44,17 +46,20 @@ export function safeFilename(name: string): string {
 }
 
 async function extractPdf(bytes: Uint8Array, filename: string, ocr: OcrAdapter): Promise<PageText[]> {
-  let pageTexts: string[];
+  let pageTexts: string[] = [];
+  let tooLong = false;
   try {
     const { getDocumentProxy, extractText } = await import('unpdf');
     const pdf = await getDocumentProxy(new Uint8Array(bytes));
-    const res = await extractText(pdf, { mergePages: false });
-    pageTexts = res.text as string[];
+    // Checked before any text extraction or OCR so an oversized file costs almost nothing.
+    if (pdf.numPages > MAX_PDF_PAGES) tooLong = true;
+    else pageTexts = (await extractText(pdf, { mergePages: false })).text as string[];
   } catch {
     // Unparseable file: one failed page so the case is flagged for attention instead of silently empty.
     const r = await ocr.recognise({ filename, page: 1, bytes });
     return [{ page: 1, text: clean(r.text), ocr_status: r.ok ? 'ok' : 'failed' }];
   }
+  if (tooLong) throw new IngestError(`PDF has more than ${MAX_PDF_PAGES} pages`, 400, 'too_many_pages');
   const out: PageText[] = [];
   for (let i = 0; i < pageTexts.length; i++) {
     const text = clean(pageTexts[i] ?? '').trim();
@@ -105,17 +110,24 @@ export async function ingestDocument(
   const filename = safeFilename(input.filename);
   const ext = filename.split('.').pop()?.toLowerCase() ?? '';
   const mime = ALLOWED_EXT[ext];
-  if (!mime) throw new IngestError('Only PDF, TXT and CSV files are accepted');
-  if (input.bytes.byteLength === 0) throw new IngestError('Empty file');
-  if (input.bytes.byteLength > maxUploadBytes()) throw new IngestError('File too large', 413);
+  if (!mime) throw new IngestError('Only PDF, TXT and CSV files are accepted', 400, 'file_type');
+  if (input.bytes.byteLength === 0) throw new IngestError('Empty file', 400, 'file_empty');
+  if (input.bytes.byteLength > maxUploadBytes()) throw new IngestError('File too large', 413, 'file_too_large');
   if (ext === 'pdf' && Buffer.from(input.bytes.subarray(0, 5)).toString('latin1') !== '%PDF-') {
-    throw new IngestError('File content is not a PDF');
+    throw new IngestError('File content is not a PDF', 400, 'not_pdf');
   }
   const kind = input.kind && (DOCUMENT_KINDS as readonly string[]).includes(input.kind) ? input.kind : 'other';
 
   const sha = sha256Hex(input.bytes);
   const existing = await findByHash(db, input.caseId, sha);
   if (existing) return { document: existing, duplicate: true };
+
+  if (isDemoPublic()) {
+    const [{ n } = { n: 0 }] = await db.select({ n: count() }).from(documents).where(eq(documents.caseId, input.caseId));
+    if (n >= DEMO_MAX_FILES_PER_CASE) {
+      throw new IngestError(`A demo case holds at most ${DEMO_MAX_FILES_PER_CASE} files`, 400, 'too_many_files');
+    }
+  }
 
   const pages = await extractPages(input.bytes, filename, ext, deps.ocr ?? getOcrAdapter());
   const storageKey = `cases/${input.caseId}/${sha}.${ext}`;
@@ -140,7 +152,7 @@ export async function ingestDocument(
     // Lost a race with a concurrent identical upload.
     const again = await findByHash(db, input.caseId, sha);
     if (again) return { document: again, duplicate: true };
-    throw new IngestError('Could not store document', 500);
+    throw new IngestError('Could not store document', 500, 'ingest_failed');
   }
   await audit(db, {
     actorId: input.uploadedBy,

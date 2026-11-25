@@ -1,5 +1,7 @@
 import { createHash, createHmac } from 'node:crypto';
 import type { ModelProvider, ModelRequest, ModelResult } from '../contracts';
+import { isDemoPublic } from '../env';
+import { log } from '../log';
 import { buildPrompt } from './prompt';
 
 // ---------- Synthetic (deterministic, no network) ----------
@@ -144,10 +146,20 @@ export function liveProvidersConfigured(): { anthropic: boolean; bedrock: boolea
  * explicitly selected AND configured; otherwise we throw rather than silently falling back, so a
  * result is never mislabelled.
  */
+let demoNoticeLogged = false;
+
 export function getProvider(): ModelProvider {
   const e = process.env;
   const choice = (e.MODEL_PROVIDER ?? 'synthetic').toLowerCase();
   if (choice === 'synthetic') return new SyntheticProvider();
+  if (isDemoPublic()) {
+    // Public demo: never reach a paid or live model, whatever else is configured. No secrets are logged.
+    if (!demoNoticeLogged) {
+      demoNoticeLogged = true;
+      log('warn', 'model.live_provider_refused', { reason: 'DEMO_PUBLIC=true, using synthetic model' });
+    }
+    return new SyntheticProvider();
+  }
   const cfg = liveProvidersConfigured();
   if (choice === 'anthropic') {
     if (!cfg.anthropic) throw new ModelCallError('MODEL_PROVIDER=anthropic but ANTHROPIC_API_KEY is not set');
