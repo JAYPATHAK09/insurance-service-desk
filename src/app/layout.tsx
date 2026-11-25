@@ -25,6 +25,14 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             </Link>
             {user ? (
               <div className="flex items-center gap-4 text-sm">
+                <Link href="/" className="text-muted no-underline hover:text-ink">
+                  Queue
+                </Link>
+                {user.role === 'supervisor' || user.role === 'analyst' ? (
+                  <Link href="/dashboard" className="text-muted no-underline hover:text-ink">
+                    Dashboard
+                  </Link>
+                ) : null}
                 <span className="text-muted">
                   {user.name} <span className="pill ml-2">{user.role}</span>
                 </span>

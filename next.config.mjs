@@ -7,7 +7,10 @@ const nextConfig = {
   outputFileTracingRoot: path.dirname(fileURLToPath(import.meta.url)),
   experimental: { serverActions: { bodySizeLimit: '12mb' } },
   serverExternalPackages: ['@electric-sql/pglite', 'postgres'],
-  outputFileTracingIncludes: { '/**': ['./drizzle/**/*', './fixtures/**/*'] },
+  // Production only: bundle migrations and fixtures with the serverless functions.
+  ...(process.env.NODE_ENV === 'production'
+    ? { outputFileTracingIncludes: { '/**': ['./drizzle/**/*', './fixtures/**/*'] } }
+    : {}),
   async headers() {
     return [
       {

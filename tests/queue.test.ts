@@ -1,6 +1,6 @@
 import { eq } from 'drizzle-orm';
 import { describe, expect, it } from 'vitest';
-import { users } from '@/db/schema';
+import { findings, reviews, users } from '@/db/schema';
 import { seedIfEmpty, SEED_USERS } from '@/db/seed';
 import { listQueue, computeAttention } from '@/lib/cases';
 import { applyRetention, setRetentionDays } from '@/lib/retention';
@@ -19,6 +19,12 @@ describe('queue and attention', () => {
     const sup = (await db.select().from(users).where(eq(users.id, SEED_USERS.supervisor.id)))[0]!;
     const all = await listQueue(db, { id: sup.id, email: sup.email, name: sup.name, role: sup.role });
     expect(all.length).toBeGreaterThanOrEqual(7);
+    // Module fixtures are seeded and every fixture case has a synthetic review.
+    const fixtureRows = all.filter((r) => /FX-/.test(r.reference) || r.title.startsWith('Disclosure fixture'));
+    expect(new Set(fixtureRows.map((r) => r.module))).toEqual(new Set(['claim-reconciler', 'disclosure-checker', 'renewal-agent']));
+    const reviewed = new Set((await db.select({ id: reviews.caseId }).from(reviews)).map((r) => r.id));
+    expect(fixtureRows.every((r) => reviewed.has(r.id))).toBe(true);
+    expect((await db.select().from(findings)).length).toBeGreaterThan(10);
     const firstClean = all.findIndex((r) => r.attention.length === 0);
     expect(all.slice(0, firstClean).every((r) => r.attention.length > 0)).toBe(true);
     expect(all.slice(firstClean).every((r) => r.attention.length === 0)).toBe(true);

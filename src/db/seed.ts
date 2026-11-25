@@ -1,11 +1,16 @@
-import { count } from 'drizzle-orm';
+import { count, eq } from 'drizzle-orm';
 import { audit } from '@/lib/audit';
 import { refreshAttention } from '@/lib/cases';
 import type { ModuleId, WorkflowState } from '@/lib/contracts';
 import { ingestDocument } from '@/lib/ingest';
+import { getProvider } from '@/lib/model/providers';
 import { makeTextPdf } from '@/lib/pdf-fixture';
+import { runReview } from '@/lib/review';
+import { seedClaimFixtures } from '@/modules/claim-reconciler/fixtures';
+import { seedDisclosureFixtures } from '@/modules/disclosure-checker/fixtures';
+import { seedRenewalFixtures } from '@/modules/renewal-agent/fixtures';
 import type { Db } from './client';
-import { cases, findings, retentionPolicy, reviews, users } from './schema';
+import { cases, retentionPolicy, users } from './schema';
 
 /** Fictional people and insurers only. */
 export const SEED_USERS = {
@@ -84,76 +89,41 @@ export async function seedIfEmpty(db: Db): Promise<boolean> {
 
   const uploader = SEED_USERS.supervisor.id;
   const clm1001 = ids.get('CLM-1001')!;
-  const letter = await ingestDocument(db, { caseId: clm1001, filename: 'query-letter.txt', bytes: enc(QUERY_LETTER), kind: 'query_letter', uploadedBy: uploader });
-  const register = await ingestDocument(db, { caseId: clm1001, filename: 'document-register.txt', bytes: enc(REGISTER), kind: 'document_register', uploadedBy: uploader });
+  await ingestDocument(db, { caseId: clm1001, filename: 'query-letter.txt', bytes: enc(QUERY_LETTER), kind: 'query_letter', uploadedBy: uploader });
+  await ingestDocument(db, { caseId: clm1001, filename: 'document-register.txt', bytes: enc(REGISTER), kind: 'document_register', uploadedBy: uploader });
   // A scanned form with no text layer and no OCR sidecar: ocr_status=failed -> needs attention.
   await ingestDocument(db, { caseId: ids.get('DSC-2001')!, filename: 'scanned-disclosure.pdf', bytes: makeTextPdf(['']), kind: 'disclosure', uploadedBy: uploader });
-
-  // Placeholder synthetic review so the queue and findings tab have something to show before
-  // the module engines exist. Marked synthetic with a seed prompt version.
-  const [review] = await db
-    .insert(reviews)
-    .values({
-      caseId: clm1001,
-      module: 'claim-reconciler',
-      version: 1,
-      documentHashes: [letter.document.sha256, register.document.sha256],
-      inputHash: 'seed-clm-1001',
-      mode: 'synthetic',
-      modelId: 'synthetic-v1',
-      promptVersion: 'seed-0',
-      createdBy: uploader,
-    })
-    .returning();
-  await db.insert(findings).values([
-    {
-      caseId: clm1001,
-      reviewId: review!.id,
-      module: 'claim-reconciler',
-      key: 'item-1-discharge-summary',
-      type: 'requested_item',
-      classification: 'partially_satisfied',
-      summary: 'Discharge summary is on file but only as an unsigned copy; the insurer asked for a signed original.',
-      evidence: [
-        { doc_id: register.document.id, page: 1, quote: 'Discharge summary: copy, unsigned, received 02-Mar', verified: true },
-        { doc_id: letter.document.id, page: 1, quote: 'Original discharge summary, duly signed by the treating doctor', verified: true },
-      ],
-      suggestedOwner: SEED_USERS.handler.name,
-      nextAction: 'Request a signed original from the hospital.',
-    },
-    {
-      caseId: clm1001,
-      reviewId: review!.id,
-      module: 'claim-reconciler',
-      key: 'item-2-itemised-bill',
-      type: 'requested_item',
-      classification: 'partially_satisfied',
-      summary: 'Only a consolidated bill is on file; the insurer asked for an itemised bill.',
-      evidence: [
-        { doc_id: register.document.id, page: 1, quote: 'Hospital bill: consolidated, received 02-Mar', verified: true },
-      ],
-      nextAction: 'Request the itemised bill.',
-    },
-  ]);
-  const clm1003 = ids.get('CLM-1003')!;
-  const [r3] = await db
-    .insert(reviews)
-    .values({ caseId: clm1003, module: 'claim-reconciler', version: 1, documentHashes: [], inputHash: 'seed-clm-1003', mode: 'synthetic', modelId: 'synthetic-v1', promptVersion: 'seed-0', createdBy: uploader })
-    .returning();
-  await db.insert(findings).values({
-    caseId: clm1003,
-    reviewId: r3!.id,
-    module: 'claim-reconciler',
-    key: 'item-1-itemised-bill',
-    type: 'requested_item',
-    classification: 'repeated_request',
-    summary: 'The insurer repeated a request already answered in an earlier submission.',
-    evidence: [],
-  });
 
   for (const [ref, id] of ids) {
     await audit(db, { actorId: uploader, action: 'case.seeded', caseId: id, entity: 'case', entityId: id, meta: { reference: ref } });
     await refreshAttention(db, id);
   }
+
+  await seedModuleFixtures(db);
   return true;
+}
+
+/**
+ * Load every module's fixture cases and run the synthetic review on each so the queue and findings
+ * are populated. Synthetic mode only (a live provider must never be called from the seed path).
+ * Idempotent: the loaders key cases by module+insurer+reference and reviews dedupe by input hash.
+ */
+export async function seedModuleFixtures(db: Db): Promise<number> {
+  if (getProvider().mode !== 'synthetic') return 0;
+  const ownerId = SEED_USERS.handler.id;
+  const caseIds = new Set<string>();
+  for (const r of await seedClaimFixtures(db, { ownerId })) caseIds.add(r.caseId);
+  for (const r of await seedDisclosureFixtures(db, { ownerId })) caseIds.add(r.caseId);
+  for (const r of await seedRenewalFixtures(db, { ownerId })) caseIds.add(r.caseId);
+  // The seeded CLM-1001 has real documents, so it gets a real synthetic review in place of the old placeholder.
+  const [clm1001] = await db.select({ id: cases.id }).from(cases).where(eq(cases.reference, 'CLM-1001'));
+  if (clm1001) caseIds.add(clm1001.id);
+  for (const caseId of caseIds) {
+    try {
+      await runReview(db, { caseId, actorId: SEED_USERS.supervisor.id });
+    } catch (e) {
+      console.warn('seed review skipped:', caseId, e instanceof Error ? e.message : e);
+    }
+  }
+  return caseIds.size;
 }
