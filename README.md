@@ -1,1 +1,5 @@
-# insurance-service-desk
+# Insurance Service Desk
+Requires Node 20+. Run npm test then npm start. Open http://localhost:3000. No dependencies or API keys required for local rule mode. A rules review compares structured fields literally; align member, term and period first. Claude mode accepts free text and verifies verbatim evidence before returning results.
+
+Deploy the repository root to Vercel as an Other project. Set DESK_PASSWORD to a strong shared secret. This is a single-team demo: everyone with the password can read saved findings. Use synthetic data. For durable storage run schema.sql in the Neon SQL editor and set DATABASE_URL to that Neon Postgres connection string in Vercel. Redeploy after setting variables. Without Neon, download JSON after each review. Quotes are saved with findings when Neon is enabled.
+Optionally configure ANTHROPIC_API_KEY and ANTHROPIC_MODEL, or enter a personal Anthropic key in the Claude-mode form. Keys are held in page memory and transmitted to the backend only for AI review. Choose a model available to your account. Use an authenticated personal Claude Code session for the separately included project subagents.

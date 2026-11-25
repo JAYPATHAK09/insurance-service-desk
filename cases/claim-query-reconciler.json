@@ -1,0 +1,5 @@
+{
+  "case_id": "claim-query-reconciler-sample",
+  "source_a": "Insurer request for synthetic case C17, patient Mira: signed discharge summary, final bill, itemised invoice. This is the second request for the final bill.",
+  "source_b": "Submission register C17: final bill for Mira transmitted, receipt ACK-017. Discharge summary for Mira uploaded unsigned. No invoice entry."
+}

@@ -1,0 +1,20 @@
+{
+  "claim-query-reconciler": [
+    "receipt located",
+    "partial evidence",
+    "missing",
+    "ambiguous"
+  ],
+  "proposal-disclosure-checker": [
+    "consistent",
+    "contradiction",
+    "omitted",
+    "needs confirmation"
+  ],
+  "renewal-terms-reviewer": [
+    "unchanged",
+    "changed",
+    "unconfirmed",
+    "identity mismatch"
+  ]
+}

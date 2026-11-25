@@ -1,0 +1,5 @@
+{
+  "case_id": "proposal-disclosure-checker-sample",
+  "source_a": "Customer-confirmed record P08: Mira reports diabetes: yes. Mira reports surgery: angioplasty in 2023. Dev reports diabetes: no.",
+  "source_b": "Draft P08: Mira diabetes: no. Mira surgery: unanswered. Dev diabetes: no."
+}
