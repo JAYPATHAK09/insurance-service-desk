@@ -11,6 +11,14 @@ export default async function handler(req,res){
  res.setHeader('Cache-Control','no-store');
  try{
  const body=req.body||{},token=process.env.DESK_PASSWORD;
+ if(req.method==='POST' && body.sessionOnly===true){
+  const {agent,a,b,mode}=body;
+  if(!modes.includes(agent)||!['rules','claude'].includes(mode)||![a,b].every(x=>typeof x==='string'&&x.trim()&&x.length<=30000))throw Error('Supply two source texts up to 30,000 characters each.');
+  const key=req.headers['x-model-key'];
+  if(mode==='claude'&&(!key||typeof key!=='string'))throw Error('Enter your Claude API key.');
+  const findings=mode==='rules'?offline(agent,a,b):await analyze(agent,a,b,key);
+  return res.json({id:randomUUID(),agent,mode,findings,saved:false});
+ }
  if(!token&&(process.env.VERCEL||process.env.DATABASE_URL||process.env.ANTHROPIC_API_KEY))return res.status(503).json({error:'Configure DESK_PASSWORD first.'});
  if(token&&!timingSafeEqual(hash(token),hash(String(req.headers['x-desk-password']||''))))return res.status(401).json({error:'Enter the workspace password.'});
  if(req.method==='PATCH'){
