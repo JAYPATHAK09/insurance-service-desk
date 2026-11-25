@@ -8,6 +8,7 @@ import { refreshAttention } from '@/lib/cases';
 import { WORKFLOW_STATES } from '@/lib/contracts';
 import { FindingError, decideFinding } from '@/lib/findings';
 import { IngestError, ingestDocument } from '@/lib/ingest';
+import { enforceRateLimit } from '@/lib/ratelimit';
 import { ReviewError, runReview } from '@/lib/review';
 import { requireCase } from '@/lib/session';
 import { WorkflowError, reopenCase, transitionCase } from '@/lib/workflow';
@@ -18,23 +19,19 @@ import { findings } from '@/db/schema';
 
 const Id = z.string().min(1).max(100);
 
-function back(caseId: string, tab: string, key: 'error' | 'notice', msg: string): never {
-  redirect(`/cases/${encodeURIComponent(caseId)}?tab=${tab}&${key}=${encodeURIComponent(msg.slice(0, 160))}`);
+/** Redirect with a short code; the page maps it to fixed text (see lib/messages.ts). */
+function back(caseId: string, tab: string, key: 'error' | 'notice', code: string): never {
+  redirect(`/cases/${encodeURIComponent(caseId)}?tab=${tab}&${key}=${encodeURIComponent(code)}`);
 }
 
-/** Domain errors become visible messages; HttpErrors (401/403/404) propagate to the framework. */
-function userMessage(err: unknown): string | null {
+/** Domain errors become an error code; HttpErrors (401/403/404/429) propagate to the framework. */
+function errorCode(err: unknown): string | null {
   if (err instanceof HttpError) return null;
-  if (
-    err instanceof IngestError ||
-    err instanceof WorkflowError ||
-    err instanceof ReviewError ||
-    err instanceof FindingError ||
-    err instanceof ModelCallError ||
-    err instanceof ModelOutputError
-  ) {
-    return err.message;
-  }
+  if (err instanceof IngestError) return err.code;
+  if (err instanceof WorkflowError) return 'workflow_refused';
+  if (err instanceof ReviewError) return 'review_failed';
+  if (err instanceof FindingError) return 'finding_refused';
+  if (err instanceof ModelCallError || err instanceof ModelOutputError) return 'model_failed';
   return null;
 }
 
@@ -43,20 +40,22 @@ export async function uploadAction(caseId: string, formData: FormData) {
   const { user, db } = await requireCase(id, 'write');
   const file = formData.get('file');
   const kind = z.string().max(40).catch('other').parse(formData.get('kind') ?? 'other');
-  let msg: string;
+  let notice: string;
   try {
-    if (!(file instanceof File) || file.size === 0) throw new IngestError('Choose a file to upload');
+    await enforceRateLimit('upload');
+    if (!(file instanceof File) || file.size === 0) throw new IngestError('Choose a file to upload', 400, 'choose_file');
     const bytes = new Uint8Array(await file.arrayBuffer());
     const { duplicate } = await ingestDocument(db, { caseId: id, filename: file.name, bytes, kind, uploadedBy: user.id });
     await refreshAttention(db, id);
-    msg = duplicate ? 'This exact file is already attached to the case; nothing was added.' : 'Document uploaded.';
+    notice = duplicate ? 'duplicate' : 'uploaded';
   } catch (err) {
-    const m = userMessage(err);
-    if (m === null) throw err;
-    back(id, 'documents', 'error', m);
+    if (err instanceof HttpError && err.status === 429) back(id, 'documents', 'error', 'rate_limited');
+    const c = errorCode(err);
+    if (c === null) throw err;
+    back(id, 'documents', 'error', c);
   }
   revalidatePath(`/cases/${id}`);
-  back(id, 'documents', 'notice', msg);
+  back(id, 'documents', 'notice', notice);
 }
 
 export async function transitionAction(caseId: string, formData: FormData) {
@@ -66,12 +65,12 @@ export async function transitionAction(caseId: string, formData: FormData) {
   try {
     await transitionCase(db, { caseId: id, to, actorId: user.id, role: user.role });
   } catch (err) {
-    const m = userMessage(err);
-    if (m === null) throw err;
-    back(id, 'documents', 'error', m);
+    const c = errorCode(err);
+    if (c === null) throw err;
+    back(id, 'documents', 'error', c);
   }
   revalidatePath(`/cases/${id}`);
-  back(id, 'documents', 'notice', 'Status updated.');
+  back(id, 'documents', 'notice', 'status_updated');
 }
 
 export async function reopenAction(caseId: string, formData: FormData) {
@@ -81,28 +80,28 @@ export async function reopenAction(caseId: string, formData: FormData) {
   try {
     await reopenCase(db, { caseId: id, reason, actorId: user.id, role: user.role });
   } catch (err) {
-    const m = userMessage(err);
-    if (m === null) throw err;
-    back(id, 'audit', 'error', m);
+    const c = errorCode(err);
+    if (c === null) throw err;
+    back(id, 'audit', 'error', c);
   }
   revalidatePath(`/cases/${id}`);
-  back(id, 'audit', 'notice', 'Case reopened and recorded in the audit trail.');
+  back(id, 'audit', 'notice', 'reopened');
 }
 
 export async function reviewAction(caseId: string) {
   const id = Id.parse(caseId);
   const { user, db } = await requireCase(id, 'write');
-  let msg: string;
+  let notice: string;
   try {
     const out = await runReview(db, { caseId: id, actorId: user.id });
-    msg = out.state === 'replayed' ? 'Same documents and model: existing review reused.' : out.state === 'ran' ? 'Review complete.' : 'A review is already running.';
+    notice = out.state === 'replayed' ? 'review_reused' : out.state === 'ran' ? 'review_complete' : 'review_running';
   } catch (err) {
-    const m = userMessage(err);
-    if (m === null) throw err;
-    back(id, 'findings', 'error', m);
+    const c = errorCode(err);
+    if (c === null) throw err;
+    back(id, 'findings', 'error', c);
   }
   revalidatePath(`/cases/${id}`);
-  back(id, 'findings', 'notice', msg);
+  back(id, 'findings', 'notice', notice);
 }
 
 export async function decideAction(caseId: string, formData: FormData) {
@@ -121,10 +120,10 @@ export async function decideAction(caseId: string, formData: FormData) {
   try {
     await decideFinding(db, { findingId: input.findingId, actorId: user.id, decision: input.decision, note: input.note });
   } catch (err) {
-    const m = userMessage(err);
-    if (m === null) throw err;
-    back(id, 'findings', 'error', m);
+    const c = errorCode(err);
+    if (c === null) throw err;
+    back(id, 'findings', 'error', c);
   }
   revalidatePath(`/cases/${id}`);
-  back(id, 'findings', 'notice', 'Decision recorded.');
+  back(id, 'findings', 'notice', 'decision_recorded');
 }

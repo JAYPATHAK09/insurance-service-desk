@@ -17,14 +17,17 @@ import { ClaimError, approveDraft, supervisorApproveDraft } from '@/modules/clai
 
 const Id = z.string().min(1).max(100);
 
-function back(caseId: string, key: 'error' | 'notice', msg: string): never {
-  redirect(`/cases/${encodeURIComponent(caseId)}/claim-reconciler?${key}=${encodeURIComponent(msg.slice(0, 160))}`);
+function back(caseId: string, key: 'error' | 'notice', code: string): never {
+  redirect(`/cases/${encodeURIComponent(caseId)}/claim-reconciler?${key}=${encodeURIComponent(code)}`);
 }
 
-/** Domain errors become visible messages; HttpErrors (401/403/404) propagate to the framework. */
-function userMessage(err: unknown): string | null {
+/** Domain errors become a short code (mapped to fixed text by the page); HttpErrors propagate. */
+function errorCode(err: unknown): string | null {
   if (err instanceof HttpError) return null;
-  if (err instanceof ReviewError || err instanceof FindingError || err instanceof ClaimError || err instanceof ModelCallError || err instanceof ModelOutputError) return err.message;
+  if (err instanceof ClaimError) return 'claim_refused';
+  if (err instanceof FindingError) return 'finding_refused';
+  if (err instanceof ReviewError) return 'review_failed';
+  if (err instanceof ModelCallError || err instanceof ModelOutputError) return 'model_failed';
   return null;
 }
 
@@ -41,9 +44,9 @@ export async function runAction(caseId: string) {
   try {
     const out = await runReview(db, { caseId: id, actorId: user.id });
     await emitRunKpis(db, id);
-    msg = out.state === 'replayed' ? 'Same documents and model: the existing review was reused.' : out.state === 'ran' ? 'Review complete.' : 'A review is already running.';
+    msg = out.state === 'replayed' ? 'review_reused' : out.state === 'ran' ? 'review_complete' : 'review_running';
   } catch (err) {
-    const m = userMessage(err);
+    const m = errorCode(err);
     if (m === null) throw err;
     back(id, 'error', m);
   }
@@ -62,12 +65,12 @@ export async function decideAction(caseId: string, formData: FormData) {
     await decideFinding(db, { findingId: input.findingId, actorId: user.id, decision: input.decision, note: input.note });
     await emitDecisionKpis(db, { findingId: input.findingId, decision: input.decision });
   } catch (err) {
-    const m = userMessage(err);
+    const m = errorCode(err);
     if (m === null) throw err;
     back(id, 'error', m);
   }
   revalidatePath(`/cases/${id}/claim-reconciler`);
-  back(id, 'notice', 'Verification decision recorded.');
+  back(id, 'notice', 'cr_verified');
 }
 
 export async function correctAction(caseId: string, formData: FormData) {
@@ -81,12 +84,12 @@ export async function correctAction(caseId: string, formData: FormData) {
     await correctClassification(db, { findingId: input.findingId, actorId: user.id, to: input.to, reason: input.reason, allowed: CLASSIFICATIONS['claim-reconciler'] });
     await emitCorrectionKpis(db, { findingId: input.findingId });
   } catch (err) {
-    const m = userMessage(err);
+    const m = errorCode(err);
     if (m === null) throw err;
     back(id, 'error', m);
   }
   revalidatePath(`/cases/${id}/claim-reconciler`);
-  back(id, 'notice', 'Classification corrected; the earlier value is kept in the history.');
+  back(id, 'notice', 'cr_corrected');
 }
 
 export async function approveDraftAction(caseId: string, formData: FormData) {
@@ -96,12 +99,12 @@ export async function approveDraftAction(caseId: string, formData: FormData) {
   try {
     await approveDraft(db, { caseId: id, user, seenHash });
   } catch (err) {
-    const m = userMessage(err);
+    const m = errorCode(err);
     if (m === null) throw err;
     back(id, 'error', m);
   }
   revalidatePath(`/cases/${id}/claim-reconciler`);
-  back(id, 'notice', 'Draft marked ready by the handler. It has not been sent anywhere.');
+  back(id, 'notice', 'cr_draft_ready');
 }
 
 export async function supervisorApproveAction(caseId: string, formData: FormData) {
@@ -111,10 +114,10 @@ export async function supervisorApproveAction(caseId: string, formData: FormData
   try {
     await supervisorApproveDraft(db, { caseId: id, user, seenHash });
   } catch (err) {
-    const m = userMessage(err);
+    const m = errorCode(err);
     if (m === null) throw err;
     back(id, 'error', m);
   }
   revalidatePath(`/cases/${id}/claim-reconciler`);
-  back(id, 'notice', 'Supervisor approval recorded. Nothing has been sent.');
+  back(id, 'notice', 'cr_supervisor_approved');
 }

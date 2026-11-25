@@ -16,15 +16,18 @@ import { CLASSIFICATIONS } from '@/lib/contracts';
 const Id = z.string().min(1).max(100);
 const Lang = z.enum(EXPLANATION_LANGS).catch('en');
 
-function back(caseId: string, lang: string, key: 'error' | 'notice', msg: string): never {
-  redirect(`/cases/${encodeURIComponent(caseId)}/renewal-agent?lang=${lang}&${key}=${encodeURIComponent(msg.slice(0, 200))}`);
+function back(caseId: string, lang: string, key: 'error' | 'notice', code: string): never {
+  redirect(`/cases/${encodeURIComponent(caseId)}/renewal-agent?lang=${lang}&${key}=${encodeURIComponent(code)}`);
 }
 
-function userMessage(err: unknown): string | null {
+/** Domain errors become a short code (mapped to fixed text by the page); HttpErrors propagate. */
+function errorCode(err: unknown): string | null {
   if (err instanceof HttpError) return null;
-  if (err instanceof RenewalError || err instanceof FindingError || err instanceof ReviewError || err instanceof ModelCallError || err instanceof ModelOutputError || err instanceof z.ZodError) {
-    return err instanceof z.ZodError ? 'Please check the form fields and try again.' : err.message;
-  }
+  if (err instanceof z.ZodError) return 'invalid_form';
+  if (err instanceof RenewalError) return 'renewal_refused';
+  if (err instanceof FindingError) return 'finding_refused';
+  if (err instanceof ReviewError) return 'review_failed';
+  if (err instanceof ModelCallError || err instanceof ModelOutputError) return 'model_failed';
   return null;
 }
 
@@ -42,9 +45,9 @@ export async function runReviewAction(caseId: string, formData: FormData) {
   let msg: string;
   try {
     const out = await runReview(db, { caseId: id, actorId: user.id });
-    msg = out.state === 'replayed' ? 'Same documents and model: existing review reused.' : out.state === 'ran' ? 'Review complete.' : 'A review is already running.';
+    msg = out.state === 'replayed' ? 'review_reused' : out.state === 'ran' ? 'review_complete' : 'review_running';
   } catch (err) {
-    const m = userMessage(err);
+    const m = errorCode(err);
     if (m === null) throw err;
     back(id, lang, 'error', m);
   }
@@ -61,9 +64,9 @@ export async function decideRowAction(caseId: string, formData: FormData) {
       .object({ findingId: Id, choice: z.enum(CHOICES), note: z.string().max(900).catch('') })
       .parse({ findingId: formData.get('findingId'), choice: formData.get('choice'), note: formData.get('note') ?? '' });
     await recordDecision(db, { caseId: id, findingId: input.findingId, user, choice: input.choice, note: input.note });
-    msg = 'Decision recorded.';
+    msg = 'decision_recorded';
   } catch (err) {
-    const m = userMessage(err);
+    const m = errorCode(err);
     if (m === null) throw err;
     back(id, lang, 'error', m);
   }
@@ -80,9 +83,9 @@ export async function correctAction(caseId: string, formData: FormData) {
       .object({ findingId: Id, to: z.enum(CLASSIFICATIONS['renewal-agent']), reason: z.string().trim().min(3).max(500) })
       .parse({ findingId: formData.get('findingId'), to: formData.get('to'), reason: formData.get('reason') });
     await recordCorrection(db, { caseId: id, findingId: input.findingId, user, to: input.to, reason: input.reason });
-    msg = 'Classification corrected; the previous value is kept in the history.';
+    msg = 'ra_corrected';
   } catch (err) {
-    const m = userMessage(err);
+    const m = errorCode(err);
     if (m === null) throw err;
     back(id, lang, 'error', m);
   }
@@ -97,9 +100,9 @@ export async function approveAction(caseId: string, formData: FormData) {
   try {
     const version = z.string().min(1).max(100).parse(formData.get('version'));
     await approveExplanation(db, { caseId: id, user, lang, version });
-    msg = 'Explanation approved by supervisor. The platform does not send it: the advisor sends it outside the platform.';
+    msg = 'ra_approved';
   } catch (err) {
-    const m = userMessage(err);
+    const m = errorCode(err);
     if (m === null) throw err;
     back(id, lang, 'error', m);
   }
@@ -115,9 +118,9 @@ export async function acknowledgeAction(caseId: string, formData: FormData) {
     const findingId = Id.parse(formData.get('findingId'));
     const input = AckInput.parse({ customerName: formData.get('customerName'), channel: formData.get('channel'), lang });
     await recordAcknowledgement(db, { caseId: id, findingId, user, input });
-    msg = 'Customer acknowledgement recorded.';
+    msg = 'ra_acknowledged';
   } catch (err) {
-    const m = userMessage(err);
+    const m = errorCode(err);
     if (m === null) throw err;
     back(id, lang, 'error', m);
   }

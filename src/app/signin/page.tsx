@@ -13,6 +13,12 @@ const BLURB: Record<string, string> = {
   analyst: 'Read-only access to every case.',
 };
 
+/** Fixed messages keyed by short code: the query string never supplies display text. */
+const SIGNIN_ERRORS: Record<string, string> = {
+  invalid: 'Could not sign in. Pick one of the listed users.',
+  rate: 'Too many sign-in attempts. Wait a minute and try again.',
+};
+
 export default async function SignInPage({ searchParams }: { searchParams: Promise<{ error?: string }> }) {
   if (await getUser()) redirect('/');
   const { error } = await searchParams;
@@ -26,7 +32,7 @@ export default async function SignInPage({ searchParams }: { searchParams: Promi
       </p>
       {error ? (
         <p role="alert" className="mt-6 rounded-lg border border-danger/40 bg-danger/10 px-4 py-3 text-sm text-danger">
-          Could not sign in. Pick one of the listed users.
+          {SIGNIN_ERRORS[error] ?? SIGNIN_ERRORS.invalid}
         </p>
       ) : null}
       <div className="mt-8 space-y-4">

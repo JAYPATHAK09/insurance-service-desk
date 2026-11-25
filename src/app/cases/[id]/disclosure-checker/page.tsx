@@ -5,6 +5,7 @@ import { getDb } from '@/db/client';
 import { cases } from '@/db/schema';
 import { fmtDateTime, ModeBadge } from '@/components/ui';
 import { canAccessCase } from '@/lib/access';
+import { ERRORS, NOTICES, messageFor } from '@/lib/messages';
 import { getUser } from '@/lib/session';
 import { NEVER_COMPLETES_STATEMENT } from '@/modules/disclosure-checker';
 import { RECORD_NOTICE } from '@/modules/disclosure-checker/report';
@@ -73,14 +74,14 @@ export default async function DisclosurePage({
         {NEVER_COMPLETES_STATEMENT}
       </p>
 
-      {sp.error ? (
+      {messageFor(ERRORS, sp.error) ? (
         <p role="alert" className="rounded-lg border border-danger/40 bg-danger/10 px-4 py-3 text-sm text-danger">
-          {sp.error}
+          {messageFor(ERRORS, sp.error)}
         </p>
       ) : null}
-      {sp.notice ? (
+      {messageFor(NOTICES, sp.notice) ? (
         <p role="status" className="rounded-lg border border-success/40 bg-success/10 px-4 py-3 text-sm text-success">
-          {sp.notice}
+          {messageFor(NOTICES, sp.notice)}
         </p>
       ) : null}
 

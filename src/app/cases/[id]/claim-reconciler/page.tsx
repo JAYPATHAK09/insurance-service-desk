@@ -7,6 +7,7 @@ import { ModeBadge, fmtDateTime } from '@/components/ui';
 import { canAccessCase } from '@/lib/access';
 import { CLASSIFICATIONS } from '@/lib/contracts';
 import { listDocuments } from '@/lib/ingest';
+import { ERRORS, NOTICES, messageFor } from '@/lib/messages';
 import { getUser } from '@/lib/session';
 import { downloadUrl } from '@/lib/storage';
 import { currentDraft, latestFindings } from '@/modules/claim-reconciler/service';
@@ -87,14 +88,14 @@ export default async function ClaimReconcilerPage({
         </p>
       </div>
 
-      {sp.error ? (
+      {messageFor(ERRORS, sp.error) ? (
         <p role="alert" className="rounded-lg border border-danger/40 bg-danger/10 px-4 py-3 text-sm text-danger">
-          {sp.error}
+          {messageFor(ERRORS, sp.error)}
         </p>
       ) : null}
-      {sp.notice ? (
+      {messageFor(NOTICES, sp.notice) ? (
         <p role="status" className="rounded-lg border border-success/40 bg-success/10 px-4 py-3 text-sm text-success">
-          {sp.notice}
+          {messageFor(NOTICES, sp.notice)}
         </p>
       ) : null}
 
