@@ -91,7 +91,7 @@
     @apply w-full rounded-lg border border-line bg-surface px-3 py-2 text-sm text-ink placeholder:text-muted;
   }
   .pill {
-    @apply inline-flex items-center rounded-full border border-line bg-subtle px-2.5 py-0.5 text-xs font-medium text-ink;
+    @apply inline-flex items-center whitespace-nowrap rounded-full border border-line bg-subtle px-2.5 py-0.5 text-xs font-medium text-ink;
   }
   .th {
     @apply px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-muted;
