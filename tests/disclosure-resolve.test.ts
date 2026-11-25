@@ -2,6 +2,7 @@ import { and, eq } from 'drizzle-orm';
 import { describe, expect, it } from 'vitest';
 import { acknowledgements, findings, kpiEvents } from '@/db/schema';
 import { canAccessCase } from '@/lib/access';
+import type { Role } from '@/lib/contracts';
 import { FindingError } from '@/lib/findings';
 import { MemoryStorage } from '@/lib/storage';
 import { seedDisclosureFixtures } from '@/modules/disclosure-checker/fixtures';
@@ -19,7 +20,7 @@ async function setup() {
 const confirm = (over: Record<string, unknown> = {}) => ({
   outcome: 'customer_confirmed', customerName: 'Neelam Joshi', channel: 'call', confirmedAt: '2026-03-05', value: 'Yes, diabetes since 2019', proposalChange: 'change_needed', note: '', ...over,
 });
-const args = (caseId: string, findingId: string, input: unknown, user = U.handlerA) => ({ caseId, findingId, actorId: user.id, role: user.role, input });
+const args = (caseId: string, findingId: string, input: unknown, user: { id: string; role: Role } = U.handlerA) => ({ caseId, findingId, actorId: user.id, role: user.role, input });
 
 describe('advisor resolution', () => {
   it('records who, when and channel, keeps history on re-resolution, and counts the KPI once', async () => {
