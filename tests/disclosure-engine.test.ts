@@ -124,6 +124,52 @@ describe('live path guard', () => {
     expect(f.find((x) => x.attributes?.member === 'Nobody')!.classification).toBe('ambiguous');
     expect(f.find((x) => x.attributes?.question_id === 'Q3')!.classification).toBe('contradiction'); // missed by the model, added from the rule check
   });
+
+  it('accepts issue-type findings only from the rule engine and takes answers/dates from the rule comparison (M3)', async () => {
+    const docs = [doc('c', 'disclosure', C('Q1 | D | Yes, 2019 | 2026-03-02')), doc('p', 'proposal', P('Q1 | D | No'))];
+    const injecting: ModelProvider = {
+      mode: 'live',
+      model: 'fake',
+      async complete() {
+        return {
+          mode: 'live', model: 'fake', promptVersion: 'x',
+          output: JSON.stringify({ findings: [
+            // An invented document-level issue, by key prefix and by attribute.
+            { key: 'issue|insured_mismatch|fake', type: 'insured_mismatch', classification: 'ambiguous', summary: 'INJECTED: documents belong to different people', evidence: [], attributes: { issue: true, source: 'rule_check' } },
+            { key: 'sneaky', type: 'unreadable_document', classification: 'ambiguous', summary: 'INJECTED: page unreadable', evidence: [], attributes: { issue: true } },
+            // A real row, but the model lies about the answers and the date.
+            { key: 'q1', type: 'disclosure_difference', classification: 'contradiction', summary: 'model wording', evidence: [], attributes: {
+              member: 'Asha Test', question_id: 'Q1', customer_answer: 'No', proposal_answer: 'Yes, 2019', customer_date: '1999-01-01', proposal_date: '2000-02-02', customer_answer_kind: 'no', relation: 'spouse',
+            } },
+            // A row the rules do not have: its claimed answers are stripped, never kept.
+            { key: 'q9', type: 't', classification: 'contradiction', summary: 's', evidence: [], attributes: { member: 'Asha Test', question_id: 'Q9', customer_answer: 'Yes', proposal_answer: 'No', customer_date: '2020-01-01' } },
+          ] }),
+        };
+      },
+    };
+    const out = await disclosureChecker.run('c', docs, injecting);
+    expect(out.some((x) => /INJECTED/.test(x.summary))).toBe(false);
+    expect(out.some((x) => x.attributes?.issue === true || x.key.includes('fake'))).toBe(false);
+    expect(out.map((x) => x.type)).not.toContain('insured_mismatch');
+    expect(out.map((x) => x.type)).not.toContain('unreadable_document');
+
+    const q1 = out.find((x) => x.attributes?.question_id === 'Q1')!;
+    expect(q1.classification).toBe('contradiction');
+    expect(q1.attributes).toMatchObject({
+      member: 'Asha Test', relation: 'self',
+      customer_answer: 'Yes, 2019', customer_answer_kind: 'yes', customer_date: '2026-03-02',
+      proposal_answer: 'No', proposal_answer_kind: 'no', proposal_date: '2026-03-04', source: 'rule_check',
+    });
+
+    const q9 = out.find((x) => x.attributes?.question_id === 'Q9')!;
+    expect(q9.classification).toBe('ambiguous');
+    for (const k of ['customer_answer', 'proposal_answer', 'customer_date']) expect(q9.attributes).not.toHaveProperty(k);
+  });
+
+  it('still reports a genuine rule-engine issue when the model says nothing about it (M3)', async () => {
+    const f = await run([doc('c', 'disclosure', C('Q1 | D | No', 'Rakesh Nair')), doc('p', 'proposal', P('Q1 | D | No', 'Rakesh Nayar'))]);
+    expect(f.map((x) => x.type)).toEqual(['insured_mismatch']);
+  });
 });
 
 describe('persisted review via runReview', () => {

@@ -242,15 +242,25 @@ export function buildRequest(customer: ParsedDoc, proposal: ParsedDoc, docs: Doc
  * Re-key every finding and use the rule check as a guard on whatever the model returned:
  * - a finding the rules do not support, or classify differently, is downgraded to ambiguous (original kept)
  * - a difference the rules found but the model missed is added from the rule check
+ * - document-level `issue` findings (unreadable, mismatch, missing, ...) come ONLY from the rule engine:
+ *   any the model returns are dropped, because a model must not be able to raise or fake one
+ * - the answer, date, page and member attributes always come from the rule comparison, never from model output
  * So a live model can add explanation but cannot invent or soften a discrepancy.
  */
+const RULE_OWNED_ATTRS = [
+  'member', 'relation', 'question_id', 'question',
+  'customer_answer', 'customer_answer_kind', 'customer_date', 'customer_page', 'customer_doc_id',
+  'proposal_answer', 'proposal_answer_kind', 'proposal_date', 'proposal_page', 'proposal_doc_id',
+  'similar_members', 'source',
+] as const;
+const isIssueFinding = (f: Finding) => f.attributes?.issue === true || f.key.startsWith('issue|');
+
 export function finalise(model: Finding[], customer: ParsedDoc, proposal: ParsedDoc): Finding[] {
   const res = compareDocs(customer, proposal);
   const shas = [customer.sha256, proposal.sha256];
   const expected = new Map(res.comparisons.map((c) => [`${normName(c.member)}|${c.qid}`, c]));
   const out: Finding[] = [];
   const used = new Set<string>();
-  const usedIssues = new Set<string>();
   const seen = new Set<string>();
   const uniq = (k: string) => {
     let n = k;
@@ -261,12 +271,11 @@ export function finalise(model: Finding[], customer: ParsedDoc, proposal: Parsed
   const common = { doc_hashes: { customer: customer.sha256, proposal: proposal.sha256 }, statement: NEVER_COMPLETES_STATEMENT };
 
   for (const f of model) {
-    const a = (f.attributes ?? {}) as Record<string, unknown>;
-    if (a.issue === true || f.key.startsWith('issue|')) {
-      usedIssues.add(f.key);
-      out.push({ ...f, key: uniq(docKey(f.type, f.key, shas)), attributes: { ...a, ...common } });
-      continue;
-    }
+    if (isIssueFinding(f)) continue; // rule engine only (added below)
+    // Model-supplied answers/dates are never trusted: without a matching rule row they are removed outright.
+    const a = Object.fromEntries(
+      Object.entries(f.attributes ?? {}).filter(([k]) => !/^(customer|proposal)_/.test(k) && k !== 'issue'),
+    ) as Record<string, unknown>;
     const member = typeof a.member === 'string' ? a.member : '';
     const qid = typeof a.question_id === 'string' ? a.question_id.toUpperCase() : '';
     if (!member || !qid) {
@@ -282,7 +291,9 @@ export function finalise(model: Finding[], customer: ParsedDoc, proposal: Parsed
     } else if (exp.classification !== f.classification) {
       out.push({ ...f, key, classification: 'ambiguous', attributes: { ...a, ...common, downgradedFrom: f.classification, downgradeReason: 'disagrees_with_rule_check' } });
     } else {
-      out.push({ ...f, key, attributes: { ...a, ...common } });
+      const ruleAttrs = comparisonToRaw(exp).attributes;
+      const owned = Object.fromEntries(RULE_OWNED_ATTRS.map((k) => [k, ruleAttrs[k]]));
+      out.push({ ...f, key, attributes: { ...a, ...owned, ...common } });
     }
   }
   for (const c of res.comparisons) {
@@ -302,7 +313,6 @@ export function finalise(model: Finding[], customer: ParsedDoc, proposal: Parsed
   }
   for (const i of res.issues) {
     const r = issueToRaw(i);
-    if (usedIssues.has(r.key)) continue;
     out.push({
       key: uniq(docKey(i.type, r.key, shas)),
       type: r.type,
