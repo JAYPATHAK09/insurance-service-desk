@@ -4,11 +4,13 @@ import { signSession, verifySession } from '@/lib/session';
 import { freshDb, makeCase, U } from './helpers';
 
 describe('case access (RBAC)', () => {
-  it('refuses a handler access to a case assigned to someone else', async () => {
+  it('answers 404, identical to an unknown id, for a case assigned to someone else (no id probing)', async () => {
     const db = await freshDb();
     const theirs = await makeCase(U.handlerB.id);
-    await expect(requireCaseAccess(db, U.handlerA, theirs.id, 'read')).rejects.toMatchObject({ status: 403 });
-    await expect(requireCaseAccess(db, U.handlerA, theirs.id, 'write')).rejects.toMatchObject({ status: 403 });
+    const forbidden = await requireCaseAccess(db, U.handlerA, theirs.id, 'read').catch((e) => e);
+    const unknown = await requireCaseAccess(db, U.handlerA, 'no-such-case', 'read').catch((e) => e);
+    expect(forbidden).toMatchObject({ status: 404, message: unknown.message });
+    await expect(requireCaseAccess(db, U.handlerA, theirs.id, 'write')).rejects.toMatchObject({ status: 404 });
   });
 
   it('lets a handler read and write their own case', async () => {

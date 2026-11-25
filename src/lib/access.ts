@@ -12,7 +12,7 @@ export interface SessionUser {
 
 export class HttpError extends Error {
   constructor(
-    public status: 401 | 403 | 404 | 400 | 409 | 413 | 500,
+    public status: 401 | 403 | 404 | 400 | 409 | 413 | 415 | 429 | 500,
     message: string,
   ) {
     super(message);
@@ -38,10 +38,14 @@ export function requireRoleOf(user: SessionUser, ...roles: Role[]): void {
   if (!roles.includes(user.role)) throw new HttpError(403, 'Forbidden');
 }
 
-/** Load the case and enforce access. Throws 404 for unknown ids and 403 when not permitted. */
+/**
+ * Load the case and enforce access. A case the user may not see answers 404, identical to an unknown
+ * id, so ids cannot be probed. The only 403 is a read-only role (analyst) attempting a write on a
+ * case it can already read: nothing is revealed by that.
+ */
 export async function requireCaseAccess(db: Db, user: SessionUser, caseId: string, mode: AccessMode = 'read') {
   const [c] = await db.select().from(cases).where(eq(cases.id, caseId));
-  if (!c) throw new HttpError(404, 'Case not found');
+  if (!c || !canAccessCase(user, c, 'read')) throw new HttpError(404, 'Case not found');
   if (!canAccessCase(user, c, mode)) throw new HttpError(403, 'Forbidden');
   return c;
 }
