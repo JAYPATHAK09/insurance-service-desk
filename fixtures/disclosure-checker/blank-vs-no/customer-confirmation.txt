@@ -1,0 +1,13 @@
+CUSTOMER DISCLOSURE CONFIRMATION (call record)
+Insured person: Sunil Bose
+Date of birth: 1972-12-05
+Reference: DSC-F-007
+Confirmed on: 2026-03-02
+Channel: call
+
+MEMBER: Sunil Bose (self)
+Q1 | Diabetes or raised blood sugar | No | 2026-03-02
+Q2 | Hypertension or heart condition |  | 2026-03-02
+Q3 | Asthma or chronic respiratory condition | No | 2026-03-02
+Q4 | Hospitalised or surgery in last 4 years | ____ | 2026-03-02
+Q5 | Regular medication at present | No | 2026-03-02

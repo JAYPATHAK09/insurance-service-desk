@@ -1,0 +1,13 @@
+CUSTOMER DISCLOSURE CONFIRMATION (call record)
+Insured person: Neelam Joshi
+Date of birth: 1968-01-30
+Reference: DSC-F-004
+Confirmed on: 2026-03-02
+Channel: call
+
+MEMBER: Neelam Joshi (self)
+Q1 | Diabetes or raised blood sugar | Yes, type 2 diabetes since 2019 | 2026-03-02
+Q2 | Hypertension or heart condition | Yes, hypertension since 2020 | 2026-03-02
+Q3 | Asthma or chronic respiratory condition | No | 2026-03-02
+Q4 | Hospitalised or surgery in last 4 years | No | 2026-03-02
+Q5 | Regular medication at present | Yes, metformin daily | 2026-03-02

@@ -1,0 +1,11 @@
+DRAFT PROPOSAL - Bluebird Health
+Insured person: Rajesh Pillai
+Date of birth: 1981-05-09
+Reference: DSC-F-005
+Proposal date: 2026-03-04
+
+MEMBER: Rajesh Pillai (self)
+Q1 | Diabetes or raised blood sugar | No
+Q2 | Hypertension or heart condition | No
+Q3 | Asthma or chronic respiratory condition | No
+Q5 | Regular medication at present | No

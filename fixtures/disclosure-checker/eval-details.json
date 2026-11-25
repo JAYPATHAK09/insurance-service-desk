@@ -1,0 +1,157 @@
+{
+  "classification": {
+    "correct": 20,
+    "total": 20
+  },
+  "citation": {
+    "correct": 28,
+    "total": 28
+  },
+  "mode": "synthetic",
+  "cases": [
+    {
+      "case": "blank-vs-no",
+      "classification": {
+        "correct": 4,
+        "total": 4
+      },
+      "citation": {
+        "correct": 8,
+        "total": 8
+      },
+      "emittedCitations": {
+        "verified": 8,
+        "total": 8
+      },
+      "problems": []
+    },
+    {
+      "case": "complete",
+      "classification": {
+        "correct": 0,
+        "total": 0
+      },
+      "citation": {
+        "correct": 0,
+        "total": 0
+      },
+      "emittedCitations": {
+        "verified": 0,
+        "total": 0
+      },
+      "problems": []
+    },
+    {
+      "case": "contradictory",
+      "classification": {
+        "correct": 3,
+        "total": 3
+      },
+      "citation": {
+        "correct": 6,
+        "total": 6
+      },
+      "emittedCitations": {
+        "verified": 6,
+        "total": 6
+      },
+      "problems": []
+    },
+    {
+      "case": "duplicate",
+      "classification": {
+        "correct": 1,
+        "total": 1
+      },
+      "citation": {
+        "correct": 2,
+        "total": 2
+      },
+      "emittedCitations": {
+        "verified": 2,
+        "total": 2
+      },
+      "problems": []
+    },
+    {
+      "case": "insured-mismatch",
+      "classification": {
+        "correct": 1,
+        "total": 1
+      },
+      "citation": {
+        "correct": 0,
+        "total": 0
+      },
+      "emittedCitations": {
+        "verified": 0,
+        "total": 0
+      },
+      "problems": []
+    },
+    {
+      "case": "omission",
+      "classification": {
+        "correct": 3,
+        "total": 3
+      },
+      "citation": {
+        "correct": 3,
+        "total": 3
+      },
+      "emittedCitations": {
+        "verified": 3,
+        "total": 3
+      },
+      "problems": []
+    },
+    {
+      "case": "partial",
+      "classification": {
+        "correct": 4,
+        "total": 4
+      },
+      "citation": {
+        "correct": 5,
+        "total": 5
+      },
+      "emittedCitations": {
+        "verified": 5,
+        "total": 5
+      },
+      "problems": []
+    },
+    {
+      "case": "similar-names",
+      "classification": {
+        "correct": 3,
+        "total": 3
+      },
+      "citation": {
+        "correct": 4,
+        "total": 4
+      },
+      "emittedCitations": {
+        "verified": 4,
+        "total": 4
+      },
+      "problems": []
+    },
+    {
+      "case": "unreadable",
+      "classification": {
+        "correct": 1,
+        "total": 1
+      },
+      "citation": {
+        "correct": 0,
+        "total": 0
+      },
+      "emittedCitations": {
+        "verified": 0,
+        "total": 0
+      },
+      "problems": []
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "case": "insured-mismatch",
+  "description": "The two documents concern different insured persons: refuse to compare.",
+  "insurer": "Bluebird Health",
+  "reference": "DSC-F-009",
+  "files": [
+    {
+      "file": "customer-confirmation.txt",
+      "kind": "disclosure"
+    },
+    {
+      "file": "proposal.txt",
+      "kind": "proposal"
+    }
+  ],
+  "findings": [],
+  "docFindings": [
+    {
+      "type": "insured_mismatch",
+      "classification": "ambiguous"
+    }
+  ],
+  "matched": 0
+}

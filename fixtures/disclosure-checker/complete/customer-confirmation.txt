@@ -1,0 +1,20 @@
+CUSTOMER DISCLOSURE CONFIRMATION (call record)
+Insured person: Anita Verma
+Date of birth: 1984-03-12
+Reference: DSC-F-001
+Confirmed on: 2026-03-02
+Channel: call
+
+MEMBER: Anita Verma (self)
+Q1 | Diabetes or raised blood sugar | No | 2026-03-02
+Q2 | Hypertension or heart condition | Yes, hypertension since 2021 | 2026-03-02
+Q3 | Asthma or chronic respiratory condition | No | 2026-03-02
+Q4 | Hospitalised or surgery in last 4 years | No | 2026-03-02
+Q5 | Regular medication at present | Yes, amlodipine daily | 2026-03-02
+
+MEMBER: Sameer Verma (spouse)
+Q1 | Diabetes or raised blood sugar | No | 2026-03-02
+Q2 | Hypertension or heart condition | No | 2026-03-02
+Q3 | Asthma or chronic respiratory condition | No | 2026-03-02
+Q4 | Hospitalised or surgery in last 4 years | No | 2026-03-02
+Q5 | Regular medication at present | No | 2026-03-02

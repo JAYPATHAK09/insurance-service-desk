@@ -1,0 +1,12 @@
+DRAFT PROPOSAL - Bluebird Health
+Insured person: Lata Deshpande
+Date of birth: 1993-04-18
+Reference: DSC-F-008
+Proposal date: 2026-03-04
+
+MEMBER: Lata Deshpande (self)
+Q1 | Diabetes or raised blood sugar | No
+Q2 | Hypertension or heart condition | No
+Q3 | Asthma or chronic respiratory condition | No
+Q4 | Hospitalised or surgery in last 4 years | No
+Q5 | Regular medication at present | No

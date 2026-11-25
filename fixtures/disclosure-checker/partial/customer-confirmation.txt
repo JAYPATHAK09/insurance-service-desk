@@ -1,0 +1,20 @@
+CUSTOMER DISCLOSURE CONFIRMATION (call record)
+Insured person: Kavita Rao
+Date of birth: 1990-07-21
+Reference: DSC-F-002
+Confirmed on: 2026-03-02
+Channel: call
+
+MEMBER: Kavita Rao (self)
+Q1 | Diabetes or raised blood sugar | No | 2026-03-02
+Q2 | Hypertension or heart condition | No | 2026-03-02
+Q3 | Asthma or chronic respiratory condition | No | 2026-03-02
+Q4 | Hospitalised or surgery in last 4 years | No | 2026-03-02
+Q5 | Regular medication at present | No | 2026-03-02
+
+MEMBER: Dev Rao (spouse)
+Q1 | Diabetes or raised blood sugar | No | 2026-03-02
+Q2 | Hypertension or heart condition | No | 2026-03-02
+Q3 | Asthma or chronic respiratory condition | No | 2026-03-02
+Q4 | Hospitalised or surgery in last 4 years | No | 2026-03-02
+Q5 | Regular medication at present | Yes, thyroid tablets since 2020 | 2026-03-02

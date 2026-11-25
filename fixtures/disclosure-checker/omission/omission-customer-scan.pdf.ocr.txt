@@ -1,0 +1,17 @@
+CUSTOMER DISCLOSURE CONFIRMATION (call record)
+Insured person: Rajesh Pillai
+Date of birth: 1981-05-09
+Reference: DSC-F-005
+Confirmed on: 2026-03-02
+Channel: call
+
+MEMBER: Rajesh Pillai (self)
+Q1 | Diabetes or raised blood sugar | No | 2026-03-02
+Q2 | Hypertension or heart condition | No | 2026-03-02
+Q3 | Asthma or chronic respiratory condition | No | 2026-03-02
+Q4 | Hospitalised or surgery in last 4 years | Yes, appendectomy 2022 | 2026-03-02
+Q5 | Regular medication at present | No | 2026-03-02
+
+MEMBER: Aarav Pillai (child)
+Q1 | Diabetes or raised blood sugar | No | 2026-03-02
+Q3 | Asthma or chronic respiratory condition | Yes, childhood asthma 2021 | 2026-03-02

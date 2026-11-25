@@ -1,0 +1,19 @@
+{
+  "case": "complete",
+  "description": "Clean match: every answer agrees for self and spouse.",
+  "insurer": "Bluebird Health",
+  "reference": "DSC-F-001",
+  "files": [
+    {
+      "file": "customer-confirmation.txt",
+      "kind": "disclosure"
+    },
+    {
+      "file": "proposal.txt",
+      "kind": "proposal"
+    }
+  ],
+  "findings": [],
+  "docFindings": [],
+  "matched": 10
+}

@@ -1,0 +1,35 @@
+{
+  "case": "duplicate",
+  "description": "Exact duplicate upload (same bytes) and a re-saved proposal copy (different bytes, same content): one set of findings, not two.",
+  "insurer": "Bluebird Health",
+  "reference": "DSC-F-003",
+  "files": [
+    {
+      "file": "customer-confirmation.txt",
+      "kind": "disclosure"
+    },
+    {
+      "file": "customer-confirmation-copy.txt",
+      "kind": "disclosure"
+    },
+    {
+      "file": "proposal.txt",
+      "kind": "proposal"
+    },
+    {
+      "file": "proposal-resaved.txt",
+      "kind": "proposal"
+    }
+  ],
+  "findings": [
+    {
+      "member": "Mohan Iyer",
+      "question_id": "Q2",
+      "classification": "contradiction",
+      "customer_quote": "Q2 | Hypertension or heart condition | Yes, since 2022 | 2026-03-02",
+      "proposal_quote": "Q2 | Hypertension or heart condition | No"
+    }
+  ],
+  "docFindings": [],
+  "matched": 4
+}

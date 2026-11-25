@@ -1,0 +1,45 @@
+{
+  "case": "partial",
+  "description": "Proposal partly filled: one blank field and spouse rows missing.",
+  "insurer": "Bluebird Health",
+  "reference": "DSC-F-002",
+  "files": [
+    {
+      "file": "customer-confirmation.txt",
+      "kind": "disclosure"
+    },
+    {
+      "file": "proposal.txt",
+      "kind": "proposal"
+    }
+  ],
+  "findings": [
+    {
+      "member": "Kavita Rao",
+      "question_id": "Q4",
+      "classification": "unanswered",
+      "customer_quote": "Q4 | Hospitalised or surgery in last 4 years | No | 2026-03-02",
+      "proposal_quote": "Q4 | Hospitalised or surgery in last 4 years | "
+    },
+    {
+      "member": "Dev Rao",
+      "question_id": "Q3",
+      "classification": "omission",
+      "customer_quote": "Q3 | Asthma or chronic respiratory condition | No | 2026-03-02"
+    },
+    {
+      "member": "Dev Rao",
+      "question_id": "Q4",
+      "classification": "omission",
+      "customer_quote": "Q4 | Hospitalised or surgery in last 4 years | No | 2026-03-02"
+    },
+    {
+      "member": "Dev Rao",
+      "question_id": "Q5",
+      "classification": "omission",
+      "customer_quote": "Q5 | Regular medication at present | Yes, thyroid tablets since 2020 | 2026-03-02"
+    }
+  ],
+  "docFindings": [],
+  "matched": 6
+}

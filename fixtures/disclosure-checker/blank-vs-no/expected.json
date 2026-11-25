@@ -1,0 +1,48 @@
+{
+  "case": "blank-vs-no",
+  "description": "A blank is never a No. Customer No vs proposal blank, customer blank vs proposal No, both blank, and N/A.",
+  "insurer": "Bluebird Health",
+  "reference": "DSC-F-007",
+  "files": [
+    {
+      "file": "customer-confirmation.txt",
+      "kind": "disclosure"
+    },
+    {
+      "file": "proposal.txt",
+      "kind": "proposal"
+    }
+  ],
+  "findings": [
+    {
+      "member": "Sunil Bose",
+      "question_id": "Q1",
+      "classification": "unanswered",
+      "customer_quote": "Q1 | Diabetes or raised blood sugar | No | 2026-03-02",
+      "proposal_quote": "Q1 | Diabetes or raised blood sugar | "
+    },
+    {
+      "member": "Sunil Bose",
+      "question_id": "Q2",
+      "classification": "explicit_negative",
+      "customer_quote": "Q2 | Hypertension or heart condition |  | 2026-03-02",
+      "proposal_quote": "Q2 | Hypertension or heart condition | No"
+    },
+    {
+      "member": "Sunil Bose",
+      "question_id": "Q4",
+      "classification": "unanswered",
+      "customer_quote": "Q4 | Hospitalised or surgery in last 4 years | ____ | 2026-03-02",
+      "proposal_quote": "Q4 | Hospitalised or surgery in last 4 years | "
+    },
+    {
+      "member": "Sunil Bose",
+      "question_id": "Q5",
+      "classification": "ambiguous",
+      "customer_quote": "Q5 | Regular medication at present | No | 2026-03-02",
+      "proposal_quote": "Q5 | Regular medication at present | N/A"
+    }
+  ],
+  "docFindings": [],
+  "matched": 1
+}

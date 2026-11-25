@@ -1,0 +1,11 @@
+{
+  "classification": {
+    "correct": 20,
+    "total": 20
+  },
+  "citation": {
+    "correct": 28,
+    "total": 28
+  },
+  "mode": "synthetic"
+}

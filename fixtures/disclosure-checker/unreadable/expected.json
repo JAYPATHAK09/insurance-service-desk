@@ -1,0 +1,25 @@
+{
+  "case": "unreadable",
+  "description": "Customer confirmation is a scan whose OCR failed (no sidecar): nothing is compared and nothing is assumed.",
+  "insurer": "Bluebird Health",
+  "reference": "DSC-F-008",
+  "files": [
+    {
+      "file": "customer-confirmation.scan.pdf",
+      "kind": "disclosure",
+      "scan": "failed"
+    },
+    {
+      "file": "proposal.txt",
+      "kind": "proposal"
+    }
+  ],
+  "findings": [],
+  "docFindings": [
+    {
+      "type": "unreadable_document",
+      "classification": "ambiguous"
+    }
+  ],
+  "matched": 0
+}

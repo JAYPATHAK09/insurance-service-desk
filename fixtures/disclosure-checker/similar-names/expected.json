@@ -1,0 +1,39 @@
+{
+  "case": "similar-names",
+  "description": "Rohan Mehra, Rohit Mehra and 'R. Mehra' are three different members: answers must never be merged.",
+  "insurer": "Bluebird Health",
+  "reference": "DSC-F-006",
+  "files": [
+    {
+      "file": "customer-confirmation.txt",
+      "kind": "disclosure"
+    },
+    {
+      "file": "proposal.txt",
+      "kind": "proposal"
+    }
+  ],
+  "findings": [
+    {
+      "member": "Rohan Mehra",
+      "question_id": "Q3",
+      "classification": "contradiction",
+      "customer_quote": "Q3 | Asthma or chronic respiratory condition | Yes, asthma since 2021 | 2026-03-02",
+      "proposal_quote": "Q3 | Asthma or chronic respiratory condition | No"
+    },
+    {
+      "member": "Rohit Mehra",
+      "question_id": "Q4",
+      "classification": "omission",
+      "customer_quote": "Q4 | Hospitalised or surgery in last 4 years | Yes, tonsillectomy 2024 | 2026-03-02"
+    },
+    {
+      "member": "R. Mehra",
+      "question_id": "Q1",
+      "classification": "explicit_negative",
+      "proposal_quote": "Q1 | Diabetes or raised blood sugar | No"
+    }
+  ],
+  "docFindings": [],
+  "matched": 6
+}

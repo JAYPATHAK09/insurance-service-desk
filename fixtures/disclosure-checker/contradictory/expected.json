@@ -1,0 +1,41 @@
+{
+  "case": "contradictory",
+  "description": "Proposal says no diabetes; customer confirmed diabetes since 2019. Also a date conflict and a Yes/No conflict.",
+  "insurer": "Bluebird Health",
+  "reference": "DSC-F-004",
+  "files": [
+    {
+      "file": "customer-confirmation.txt",
+      "kind": "disclosure"
+    },
+    {
+      "file": "proposal.txt",
+      "kind": "proposal"
+    }
+  ],
+  "findings": [
+    {
+      "member": "Neelam Joshi",
+      "question_id": "Q1",
+      "classification": "contradiction",
+      "customer_quote": "Q1 | Diabetes or raised blood sugar | Yes, type 2 diabetes since 2019 | 2026-03-02",
+      "proposal_quote": "Q1 | Diabetes or raised blood sugar | No"
+    },
+    {
+      "member": "Neelam Joshi",
+      "question_id": "Q2",
+      "classification": "contradiction",
+      "customer_quote": "Q2 | Hypertension or heart condition | Yes, hypertension since 2020 | 2026-03-02",
+      "proposal_quote": "Q2 | Hypertension or heart condition | Yes, hypertension since 2023"
+    },
+    {
+      "member": "Neelam Joshi",
+      "question_id": "Q3",
+      "classification": "contradiction",
+      "customer_quote": "Q3 | Asthma or chronic respiratory condition | No | 2026-03-02",
+      "proposal_quote": "Q3 | Asthma or chronic respiratory condition | Yes, mild asthma"
+    }
+  ],
+  "docFindings": [],
+  "matched": 2
+}

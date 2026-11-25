@@ -1,0 +1,12 @@
+DRAFT PROPOSAL - Bluebird Health
+Insured person: Sunil Bose
+Date of birth: 1972-12-05
+Reference: DSC-F-007
+Proposal date: 2026-03-04
+
+MEMBER: Sunil Bose (self)
+Q1 | Diabetes or raised blood sugar | 
+Q2 | Hypertension or heart condition | No
+Q3 | Asthma or chronic respiratory condition | No
+Q4 | Hospitalised or surgery in last 4 years | 
+Q5 | Regular medication at present | N/A

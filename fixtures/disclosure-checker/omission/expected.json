@@ -1,0 +1,39 @@
+{
+  "case": "omission",
+  "description": "Customer-confirmed scan (read by OCR sidecar): a confirmed surgery and a whole child member are missing from the proposal.",
+  "insurer": "Bluebird Health",
+  "reference": "DSC-F-005",
+  "files": [
+    {
+      "file": "omission-customer-scan.pdf",
+      "kind": "disclosure",
+      "scan": "sidecar"
+    },
+    {
+      "file": "proposal.txt",
+      "kind": "proposal"
+    }
+  ],
+  "findings": [
+    {
+      "member": "Rajesh Pillai",
+      "question_id": "Q4",
+      "classification": "omission",
+      "customer_quote": "Q4 | Hospitalised or surgery in last 4 years | Yes, appendectomy 2022 | 2026-03-02"
+    },
+    {
+      "member": "Aarav Pillai",
+      "question_id": "Q1",
+      "classification": "omission",
+      "customer_quote": "Q1 | Diabetes or raised blood sugar | No | 2026-03-02"
+    },
+    {
+      "member": "Aarav Pillai",
+      "question_id": "Q3",
+      "classification": "omission",
+      "customer_quote": "Q3 | Asthma or chronic respiratory condition | Yes, childhood asthma 2021 | 2026-03-02"
+    }
+  ],
+  "docFindings": [],
+  "matched": 4
+}
