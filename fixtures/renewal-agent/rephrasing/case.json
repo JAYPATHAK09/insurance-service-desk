@@ -1,0 +1,16 @@
+{
+  "name": "rephrasing",
+  "reference": "REN-FX-107",
+  "insurer": "Northstar General",
+  "title": "Renewal fixture: Rephrasing only: same terms, different wording",
+  "documents": [
+    {
+      "file": "schedule.txt",
+      "kind": "policy_schedule"
+    },
+    {
+      "file": "renewal.txt",
+      "kind": "renewal_proposal"
+    }
+  ]
+}

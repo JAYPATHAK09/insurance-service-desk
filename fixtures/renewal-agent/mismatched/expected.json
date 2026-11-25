@@ -1,0 +1,13 @@
+{
+  "case": "mismatched",
+  "pair": "mismatched",
+  "notes": "Different policyholder (Rohit Sen vs Rohan Sengupta) and a renewal period that does not follow the expiring period. The engine must refuse to diff: no term findings at all.",
+  "findings": [
+    { "key": "pair:policyholder:renewal", "classification": "mismatched_pair", "material": false, "old": null, "new": null,
+      "old_pages": [], "new_pages": [],
+      "quotes": [["schedule.txt", 1, "Policyholder: Rohit Sen"], ["renewal.txt", 1, "Policyholder: Rohan Sengupta"]] },
+    { "key": "pair:period:renewal", "classification": "mismatched_pair", "material": false, "old": null, "new": null,
+      "old_pages": [], "new_pages": [],
+      "quotes": [["schedule.txt", 1, "Policy period: 01-Mar-2025 to 28-Feb-2026"], ["renewal.txt", 1, "Policy period: 01-Sep-2026 to 31-Aug-2027"]] }
+  ]
+}

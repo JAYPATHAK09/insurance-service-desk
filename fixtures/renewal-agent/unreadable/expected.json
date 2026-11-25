@@ -1,0 +1,21 @@
+{
+  "case": "unreadable",
+  "pair": "verified",
+  "notes": "Renewal is a scanned PDF whose page 2 fails OCR (no text layer, no sidecar). Terms that might be on that page are ocr_failure, never confirmed changes.",
+  "findings": [
+    { "key": "ocr:renewal:p2", "classification": "ocr_failure", "material": false, "old": null, "new": null,
+      "old_pages": [], "new_pages": [], "quotes": [] },
+    { "key": "renewal:premium", "classification": "confirmed_change", "material": true, "old": "Rs 15,800", "new": "Rs 17,400",
+      "old_pages": ["schedule.txt:1"], "new_pages": ["renewal.pdf:1"],
+      "quotes": [["schedule.txt", 1, "Premium: Rs 15,800 inclusive of GST"], ["renewal.pdf", 1, "Premium: Rs 17,400 inclusive of GST"]] },
+    { "key": "renewal:sum_insured", "classification": "unchanged", "material": true, "old": "Rs 4,00,000", "new": "Rs 4,00,000",
+      "old_pages": ["schedule.txt:1"], "new_pages": ["renewal.pdf:1"],
+      "quotes": [["schedule.txt", 1, "Sum insured: Rs 4,00,000"], ["renewal.pdf", 1, "Sum insured: Rs 4,00,000"]] },
+    { "key": "renewal:copay", "classification": "ocr_failure", "material": true, "old": "0% (all claims)", "new": null,
+      "old_pages": ["schedule.txt:1"], "new_pages": [],
+      "quotes": [["schedule.txt", 1, "Co-payment: 0%"]] },
+    { "key": "renewal:sub_limit:cataract-surgery", "classification": "ocr_failure", "material": true, "old": "Rs 35,000 per eye", "new": null,
+      "old_pages": ["schedule.txt:1"], "new_pages": [],
+      "quotes": [["schedule.txt", 1, "Sub-limit - Cataract surgery: Rs 35,000 per eye"]] }
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "name": "complete",
+  "reference": "REN-FX-101",
+  "insurer": "Northstar General",
+  "title": "Renewal fixture: Complete pair: co-pay 0% to 20% (age 61+), endorsement override, rephrasings",
+  "documents": [
+    {
+      "file": "schedule.txt",
+      "kind": "policy_schedule"
+    },
+    {
+      "file": "endorsement-01.txt",
+      "kind": "endorsement"
+    },
+    {
+      "file": "renewal.txt",
+      "kind": "renewal_proposal"
+    }
+  ]
+}

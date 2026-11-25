@@ -1,0 +1,31 @@
+{
+  "case": "partial",
+  "pair": "verified",
+  "notes": "Renewal is marked 6 pages; page 3 is not in the file. Co-pay and deductible cannot be compared and must NOT be called changes.",
+  "findings": [
+    { "key": "absent:renewal:p3", "classification": "absent_page", "material": false, "old": null, "new": null,
+      "old_pages": [], "new_pages": [],
+      "quotes": [["renewal.txt", 2, "Page 2 of 6"]] },
+    { "key": "renewal:premium", "classification": "confirmed_change", "material": true, "old": "Rs 41,200", "new": "Rs 44,800",
+      "old_pages": ["schedule.txt:1"], "new_pages": ["renewal.txt:1"],
+      "quotes": [["schedule.txt", 1, "Premium: Rs 41,200 inclusive of GST"], ["renewal.txt", 1, "Premium: Rs 44,800 inclusive of GST"]] },
+    { "key": "renewal:sum_insured", "classification": "unchanged", "material": true, "old": "Rs 10,00,000", "new": "Rs 10,00,000",
+      "old_pages": ["schedule.txt:1"], "new_pages": ["renewal.txt:1"],
+      "quotes": [["schedule.txt", 1, "Sum insured: Rs 10,00,000"], ["renewal.txt", 1, "Sum insured: Rs 10,00,000"]] },
+    { "key": "renewal:copay", "classification": "absent_page", "material": true, "old": "10% (all claims)", "new": null,
+      "old_pages": ["schedule.txt:2"], "new_pages": [],
+      "quotes": [["schedule.txt", 2, "Co-payment: 10% on all claims"]] },
+    { "key": "renewal:deductible", "classification": "absent_page", "material": true, "old": "Rs 25,000 per policy year", "new": null,
+      "old_pages": ["schedule.txt:2"], "new_pages": [],
+      "quotes": [["schedule.txt", 2, "Deductible: Rs 25,000 per policy year"]] },
+    { "key": "renewal:room_rent", "classification": "unchanged", "material": true, "old": "Rs 5,000 per day", "new": "Rs 5,000 per day",
+      "old_pages": ["schedule.txt:2"], "new_pages": ["renewal.txt:2"],
+      "quotes": [["schedule.txt", 2, "Room rent limit: Rs 5,000 per day"], ["renewal.txt", 2, "Room rent limit: Rs 5,000 per day"]] },
+    { "key": "renewal:waiting_period:pre_existing", "classification": "rephrasing_only", "material": true, "old": "48 months", "new": "48 months",
+      "old_pages": ["schedule.txt:2"], "new_pages": ["renewal.txt:3"],
+      "quotes": [["schedule.txt", 2, "Waiting period for pre-existing diseases: 48 months of continuous coverage"], ["renewal.txt", 3, "Pre-existing diseases: waiting period of 4 years of continuous coverage"]] },
+    { "key": "renewal:exclusion:treatment-infertility", "classification": "confirmed_change", "material": true, "old": null, "new": "Treatment for infertility",
+      "old_pages": [], "new_pages": ["renewal.txt:4"],
+      "quotes": [["renewal.txt", 4, "Exclusion: Treatment for infertility"]] }
+  ]
+}

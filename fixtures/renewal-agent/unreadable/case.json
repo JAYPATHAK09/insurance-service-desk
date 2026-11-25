@@ -1,0 +1,17 @@
+{
+  "name": "unreadable",
+  "reference": "REN-FX-105",
+  "insurer": "Bluebird Health",
+  "title": "Renewal fixture: Scanned renewal: page 2 of 3 fails OCR",
+  "documents": [
+    {
+      "file": "schedule.txt",
+      "kind": "policy_schedule"
+    },
+    {
+      "file": "renewal.txt",
+      "kind": "renewal_proposal",
+      "pdf": true
+    }
+  ]
+}

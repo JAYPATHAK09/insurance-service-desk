@@ -1,0 +1,16 @@
+{
+  "name": "mismatched",
+  "reference": "REN-FX-106",
+  "insurer": "Meridian Life",
+  "title": "Renewal fixture: Mismatched pair: different policyholder and period",
+  "documents": [
+    {
+      "file": "schedule.txt",
+      "kind": "policy_schedule"
+    },
+    {
+      "file": "renewal.txt",
+      "kind": "renewal_proposal"
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "case": "duplicate",
+  "pair": "verified",
+  "notes": "The renewal was received twice (identical terms). Exactly one finding per term: no duplicated findings.",
+  "findings": [
+    { "key": "renewal:premium", "classification": "confirmed_change", "material": true, "old": "Rs 18,300", "new": "Rs 19,900",
+      "old_pages": ["schedule.txt:1"], "new_pages": ["renewal-copy-1.txt:1"],
+      "quotes": [["schedule.txt", 1, "Premium: Rs 18,300 inclusive of GST"], ["renewal-copy-1.txt", 1, "Premium: Rs 19,900 inclusive of GST"]] },
+    { "key": "renewal:sum_insured", "classification": "unchanged", "material": true, "old": "Rs 3,00,000", "new": "Rs 3,00,000",
+      "old_pages": ["schedule.txt:1"], "new_pages": ["renewal-copy-1.txt:1"],
+      "quotes": [["schedule.txt", 1, "Sum insured: Rs 3,00,000"], ["renewal-copy-1.txt", 1, "Sum insured: Rs 3,00,000"]] },
+    { "key": "renewal:copay", "classification": "unchanged", "material": true, "old": "0% (all claims)", "new": "0% (all claims)",
+      "old_pages": ["schedule.txt:1"], "new_pages": ["renewal-copy-1.txt:1"],
+      "quotes": [["schedule.txt", 1, "Co-payment: 0%"], ["renewal-copy-1.txt", 1, "Co-payment: 0%"]] },
+    { "key": "renewal:room_rent", "classification": "unchanged", "material": true, "old": "single private room", "new": "single private room",
+      "old_pages": ["schedule.txt:1"], "new_pages": ["renewal-copy-1.txt:1"],
+      "quotes": [["schedule.txt", 1, "Room rent limit: single private room"], ["renewal-copy-1.txt", 1, "Room rent limit: single private room"]] }
+  ]
+}

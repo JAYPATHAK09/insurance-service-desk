@@ -1,0 +1,20 @@
+{
+  "name": "duplicate",
+  "reference": "REN-FX-103",
+  "insurer": "Meridian Life",
+  "title": "Renewal fixture: Duplicate renewal copy re-sent by the broker",
+  "documents": [
+    {
+      "file": "schedule.txt",
+      "kind": "policy_schedule"
+    },
+    {
+      "file": "renewal-copy-1.txt",
+      "kind": "renewal_proposal"
+    },
+    {
+      "file": "renewal-copy-2.txt",
+      "kind": "renewal_proposal"
+    }
+  ]
+}

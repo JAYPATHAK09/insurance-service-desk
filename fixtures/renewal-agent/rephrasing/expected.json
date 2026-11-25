@@ -1,0 +1,28 @@
+{
+  "case": "rephrasing",
+  "pair": "verified",
+  "notes": "Every term is worded differently but means the same (numbers and units normalised). No confirmed_change is allowed.",
+  "findings": [
+    { "key": "renewal:premium", "classification": "rephrasing_only", "material": true, "old": "Rs 31,200", "new": "Rs 31,200",
+      "old_pages": ["schedule.txt:1"], "new_pages": ["renewal.txt:1"],
+      "quotes": [["schedule.txt", 1, "Premium: Rs 31,200 inclusive of GST"], ["renewal.txt", 1, "Premium payable: ₹31,200 (incl. GST)"]] },
+    { "key": "renewal:sum_insured", "classification": "rephrasing_only", "material": true, "old": "Rs 10,00,000", "new": "Rs 10,00,000",
+      "old_pages": ["schedule.txt:1"], "new_pages": ["renewal.txt:1"],
+      "quotes": [["schedule.txt", 1, "Sum insured: Rs 10,00,000"], ["renewal.txt", 1, "Sum insured: INR 10 lakh"]] },
+    { "key": "renewal:copay", "classification": "rephrasing_only", "material": true, "old": "10% (all claims)", "new": "10% (all claims)",
+      "old_pages": ["schedule.txt:1"], "new_pages": ["renewal.txt:1"],
+      "quotes": [["schedule.txt", 1, "Co-payment: 10% on all claims"], ["renewal.txt", 1, "Co-payment: 10 per cent applicable to all claims"]] },
+    { "key": "renewal:deductible", "classification": "rephrasing_only", "material": true, "old": "Rs 25,000 per policy year", "new": "Rs 25,000 per policy year",
+      "old_pages": ["schedule.txt:1"], "new_pages": ["renewal.txt:1"],
+      "quotes": [["schedule.txt", 1, "Deductible: Rs 25,000 per policy year"], ["renewal.txt", 1, "Deductible: INR 25000 each policy year"]] },
+    { "key": "renewal:room_rent", "classification": "rephrasing_only", "material": true, "old": "1% of sum insured per day", "new": "1% of sum insured per day",
+      "old_pages": ["schedule.txt:1"], "new_pages": ["renewal.txt:1"],
+      "quotes": [["schedule.txt", 1, "Room rent limit: 1% of sum insured per day"], ["renewal.txt", 1, "Room rent: limited to 1% of the sum insured daily"]] },
+    { "key": "renewal:waiting_period:pre_existing", "classification": "rephrasing_only", "material": true, "old": "24 months", "new": "24 months",
+      "old_pages": ["schedule.txt:1"], "new_pages": ["renewal.txt:1"],
+      "quotes": [["schedule.txt", 1, "Waiting period for pre-existing diseases: 24 months"], ["renewal.txt", 1, "Pre-existing diseases: waiting period of 2 years"]] },
+    { "key": "renewal:exclusion:treatment-obesity-weight-control", "classification": "rephrasing_only", "material": true, "old": "Treatment for obesity or weight control", "new": "Obesity and weight-control treatment",
+      "old_pages": ["schedule.txt:1"], "new_pages": ["renewal.txt:1"],
+      "quotes": [["schedule.txt", 1, "Exclusion: Treatment for obesity or weight control"], ["renewal.txt", 1, "Exclusion: Obesity and weight-control treatment"]] }
+  ]
+}

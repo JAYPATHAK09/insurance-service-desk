@@ -1,0 +1,85 @@
+{
+  "case": "contradictory",
+  "pair": "verified",
+  "notes": "Two endorsements with the same effective date set different sums insured; the renewal states co-pay twice with different values. Neither may be called a change.",
+  "findings": [
+    {
+      "key": "renewal:premium",
+      "classification": "confirmed_change",
+      "material": true,
+      "old": "Rs 33,000",
+      "new": "Rs 36,400",
+      "old_pages": [
+        "schedule.txt:1"
+      ],
+      "new_pages": [
+        "renewal.txt:1"
+      ],
+      "quotes": [
+        [
+          "schedule.txt",
+          1,
+          "Premium: Rs 33,000 inclusive of GST"
+        ],
+        [
+          "renewal.txt",
+          1,
+          "Premium: Rs 36,400 inclusive of GST"
+        ]
+      ]
+    },
+    {
+      "key": "renewal:sum_insured",
+      "classification": "ambiguous",
+      "material": true,
+      "old": "Rs 7,50,000 / Rs 10,00,000 (conflicting)",
+      "new": "Rs 10,00,000",
+      "old_pages": [
+        "schedule.txt:1",
+        "endorsement-01.txt:1",
+        "endorsement-02.txt:1"
+      ],
+      "new_pages": [
+        "renewal.txt:1"
+      ],
+      "quotes": [
+        [
+          "endorsement-01.txt",
+          1,
+          "Sum insured is revised from Rs 5,00,000 to Rs 7,50,000."
+        ],
+        [
+          "endorsement-02.txt",
+          1,
+          "Sum insured is revised from Rs 5,00,000 to Rs 10,00,000."
+        ]
+      ]
+    },
+    {
+      "key": "renewal:copay",
+      "classification": "ambiguous",
+      "material": true,
+      "old": "10% (all claims)",
+      "new": "10% (all claims) / 20% (all claims) (conflicting)",
+      "old_pages": [
+        "schedule.txt:1"
+      ],
+      "new_pages": [
+        "renewal.txt:1",
+        "renewal.txt:2"
+      ],
+      "quotes": [
+        [
+          "renewal.txt",
+          1,
+          "Co-payment: 10% on all claims"
+        ],
+        [
+          "renewal.txt",
+          2,
+          "Co-payment: 20% on all claims"
+        ]
+      ]
+    }
+  ]
+}

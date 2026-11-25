@@ -1,0 +1,75 @@
+{
+  "generatedFrom": "fixtures/renewal-agent/*/expected.json, synthetic engine, citations checked with verifyCitations",
+  "note": "Fixtures were authored alongside the rule-based engine, so these numbers measure regression and the engine on its own grammar, not accuracy on unseen real-world documents.",
+  "classification": {
+    "expected": 40,
+    "spurious": 0,
+    "wrong": []
+  },
+  "citation": {
+    "expectedQuotes": 71,
+    "correct": 71,
+    "missing": [],
+    "producedEvidence": 74,
+    "producedUnverified": 0
+  },
+  "fieldChecks": {
+    "values": {
+      "correct": 36,
+      "total": 36
+    },
+    "pages": {
+      "correct": 36,
+      "total": 36
+    },
+    "materiality": {
+      "correct": 40,
+      "total": 40
+    }
+  },
+  "falseConfirmedChanges": 0,
+  "perCase": [
+    {
+      "case": "complete",
+      "expected": 11,
+      "correct": 11,
+      "spurious": 0
+    },
+    {
+      "case": "partial",
+      "expected": 8,
+      "correct": 8,
+      "spurious": 0
+    },
+    {
+      "case": "duplicate",
+      "expected": 4,
+      "correct": 4,
+      "spurious": 0
+    },
+    {
+      "case": "contradictory",
+      "expected": 3,
+      "correct": 3,
+      "spurious": 0
+    },
+    {
+      "case": "unreadable",
+      "expected": 5,
+      "correct": 5,
+      "spurious": 0
+    },
+    {
+      "case": "mismatched",
+      "expected": 2,
+      "correct": 2,
+      "spurious": 0
+    },
+    {
+      "case": "rephrasing",
+      "expected": 7,
+      "correct": 7,
+      "spurious": 0
+    }
+  ]
+}

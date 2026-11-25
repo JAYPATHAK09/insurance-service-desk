@@ -1,0 +1,24 @@
+{
+  "name": "contradictory",
+  "reference": "REN-FX-104",
+  "insurer": "Northstar General",
+  "title": "Renewal fixture: Contradictory statements: co-pay twice, conflicting endorsements",
+  "documents": [
+    {
+      "file": "schedule.txt",
+      "kind": "policy_schedule"
+    },
+    {
+      "file": "endorsement-01.txt",
+      "kind": "endorsement"
+    },
+    {
+      "file": "endorsement-02.txt",
+      "kind": "endorsement"
+    },
+    {
+      "file": "renewal.txt",
+      "kind": "renewal_proposal"
+    }
+  ]
+}

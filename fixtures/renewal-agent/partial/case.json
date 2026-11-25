@@ -1,0 +1,16 @@
+{
+  "name": "partial",
+  "reference": "REN-FX-102",
+  "insurer": "Bluebird Health",
+  "title": "Renewal fixture: Partial renewal: page 3 of 6 absent",
+  "documents": [
+    {
+      "file": "schedule.txt",
+      "kind": "policy_schedule"
+    },
+    {
+      "file": "renewal.txt",
+      "kind": "renewal_proposal"
+    }
+  ]
+}
