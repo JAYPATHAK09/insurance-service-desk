@@ -1,0 +1,6 @@
+HOSPITAL BILL
+Bill no: HB-6002
+Date: 05-Mar-2025
+Bill type: Consolidated
+Total charges: INR 31,500
+Page 1 of 1

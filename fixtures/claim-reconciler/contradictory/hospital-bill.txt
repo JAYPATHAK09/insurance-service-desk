@@ -1,0 +1,6 @@
+HOSPITAL BILL
+Bill no: HB-6004
+Date: 20-Feb-2025
+Bill type: Itemised
+Total charges: INR 18,400
+Page 1 of 1

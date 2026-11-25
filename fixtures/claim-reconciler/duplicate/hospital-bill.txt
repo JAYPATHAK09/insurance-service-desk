@@ -1,0 +1,6 @@
+ITEMISED HOSPITAL BILL
+Bill no: HB-6003
+Date: 04-Mar-2025
+Bill type: Itemised
+Surgery charges: INR 52,000
+Page 1 of 1

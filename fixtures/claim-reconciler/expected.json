@@ -1,0 +1,114 @@
+{
+  "description": "Fictional claim query cases. Every name, insurer, hospital and reference is invented. Each expected item gives the classification and one quote that must be cited (verbatim, verified against its page). A file with generate=blank-pdf is created at load time as a PDF with no text layer (a scan); its OCR text, if any, comes from the <file>.ocr.txt sidecar.",
+  "cases": [
+    {
+      "id": "complete",
+      "reference": "FX-CLM-100",
+      "insurer": "Northstar General",
+      "title": "Fixture: complete reply, all items evidenced",
+      "files": [
+        { "name": "query-letter.txt", "kind": "query_letter" },
+        { "name": "document-register.csv", "kind": "document_register" },
+        { "name": "submission-receipt.txt", "kind": "receipt" },
+        { "name": "discharge-summary.txt", "kind": "other" },
+        { "name": "hospital-bill.txt", "kind": "other" },
+        { "name": "id-proof.txt", "kind": "other" }
+      ],
+      "expected": [
+        { "item": 1, "classification": "satisfied_pending_verification", "quote": "Doctor signature: Signed - Dr. A. Verma" },
+        { "item": 2, "classification": "satisfied_pending_verification", "quote": "Bill type: Itemised" },
+        { "item": 3, "classification": "satisfied_pending_verification", "quote": "Status: SELF-ATTESTED COPY" }
+      ]
+    },
+    {
+      "id": "partial",
+      "reference": "FX-CLM-200",
+      "insurer": "Northstar General",
+      "title": "Fixture: partial reply (unsigned copy, consolidated bill, missing page, receipt only)",
+      "files": [
+        { "name": "query-letter.txt", "kind": "query_letter" },
+        { "name": "submission-receipt.txt", "kind": "receipt" },
+        { "name": "discharge-summary.txt", "kind": "other" },
+        { "name": "hospital-bill.txt", "kind": "other" },
+        { "name": "investigation-reports.txt", "kind": "other" }
+      ],
+      "expected": [
+        { "item": 1, "classification": "partially_satisfied", "reason": "qualifier_unmet", "quote": "Doctor signature: not signed" },
+        { "item": 2, "classification": "partially_satisfied", "reason": "qualifier_unmet", "quote": "Bill type: Consolidated" },
+        { "item": 3, "classification": "partially_satisfied", "reason": "qualifier_unmet", "quote": "Page 1 of 3" },
+        { "item": 4, "classification": "missing", "reason": "not_on_file", "quote": "4. Doctor prescription for the admission." },
+        { "item": 5, "classification": "ambiguous", "reason": "receipt_only", "quote": "- Pre-authorisation form" }
+      ]
+    },
+    {
+      "id": "duplicate",
+      "reference": "FX-CLM-300",
+      "insurer": "Northstar General",
+      "title": "Fixture: insurer repeats a request already answered",
+      "files": [
+        { "name": "query-letter-1.txt", "kind": "query_letter" },
+        { "name": "query-letter-2.txt", "kind": "query_letter" },
+        { "name": "document-register.csv", "kind": "document_register" },
+        { "name": "submission-receipt.txt", "kind": "receipt" },
+        { "name": "hospital-bill.txt", "kind": "other" }
+      ],
+      "expected": [
+        { "item": 1, "classification": "repeated_request", "reason": "asked_and_sent_before", "quote": "1. Itemised hospital bill no. HB-6003." },
+        { "item": 2, "classification": "missing", "reason": "not_on_file", "quote": "2. Signed doctor certificate from the treating doctor." }
+      ]
+    },
+    {
+      "id": "contradictory",
+      "reference": "FX-CLM-400",
+      "insurer": "Northstar General",
+      "title": "Fixture: register contradicts the document; date mismatch; superseded version",
+      "files": [
+        { "name": "query-letter.txt", "kind": "query_letter" },
+        { "name": "document-register.csv", "kind": "document_register" },
+        { "name": "submission-receipt.txt", "kind": "receipt" },
+        { "name": "discharge-summary.txt", "kind": "other" },
+        { "name": "hospital-bill.txt", "kind": "other" },
+        { "name": "prescription-v1.txt", "kind": "other" },
+        { "name": "prescription-v2.txt", "kind": "other" }
+      ],
+      "expected": [
+        { "item": 1, "classification": "ambiguous", "reason": "contradictory_sources", "quote": "Doctor signature: not signed" },
+        { "item": 2, "classification": "partially_satisfied", "reason": "qualifier_unmet", "quote": "Date: 20-Feb-2025" },
+        { "item": 3, "classification": "satisfied_pending_verification", "reason": "matches_on_file", "quote": "Doctor signature: Signed - Dr. S. Bhat" }
+      ]
+    },
+    {
+      "id": "unreadable",
+      "reference": "FX-CLM-500",
+      "insurer": "Bluebird Health",
+      "title": "Fixture: one scan read via OCR sidecar, one unreadable scan",
+      "files": [
+        { "name": "query-letter.txt", "kind": "query_letter" },
+        { "name": "document-register.csv", "kind": "document_register" },
+        { "name": "submission-receipt.txt", "kind": "receipt" },
+        { "name": "discharge-summary-scan.pdf", "kind": "other", "generate": "blank-pdf" },
+        { "name": "hospital-bill-scan.pdf", "kind": "other", "generate": "blank-pdf" }
+      ],
+      "expected": [
+        { "item": 1, "classification": "satisfied_pending_verification", "reason": "matches_on_file", "quote": "Doctor signature: Signed - Dr. P. Menon" },
+        { "item": 2, "classification": "ambiguous", "reason": "unreadable_scan", "quote": "2. Itemised hospital bill no. HB-6005." }
+      ]
+    },
+    {
+      "id": "wrongbill",
+      "reference": "FX-CLM-600",
+      "insurer": "Bluebird Health",
+      "title": "Fixture: receipt lists the WRONG bill number",
+      "files": [
+        { "name": "query-letter.txt", "kind": "query_letter" },
+        { "name": "document-register.csv", "kind": "document_register" },
+        { "name": "submission-receipt.txt", "kind": "receipt" },
+        { "name": "hospital-bill.txt", "kind": "other" }
+      ],
+      "expected": [
+        { "item": 1, "classification": "ambiguous", "reason": "receipt_for_different_document", "quote": "- Hospital bill no. HB-6060" },
+        { "item": 2, "classification": "ambiguous", "reason": "different_reference", "quote": "- Hospital bill no. HB-6080" }
+      ]
+    }
+  ]
+}

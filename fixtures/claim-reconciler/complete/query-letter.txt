@@ -1,0 +1,9 @@
+Northstar General - Claim Query Letter
+Query ref: QRY-100-1
+Date: 10-Mar-2025
+Claim reference: FX-CLM-100
+Dear Broker, to proceed with the claim please provide:
+1. Original discharge summary, duly signed by the treating doctor.
+2. Itemised hospital bill no. HB-6001 (a consolidated bill is not acceptable).
+3. Copy of the insured ID proof.
+Reply within 7 days.

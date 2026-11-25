@@ -1,0 +1,7 @@
+Bluebird Health - Claim Query Letter
+Query ref: QRY-600-1
+Date: 10-Mar-2025
+Claim reference: FX-CLM-600
+Please provide:
+1. Itemised hospital bill no. HB-6006.
+2. Itemised hospital bill no. HB-6008.

@@ -1,0 +1,8 @@
+Northstar General - Claim Query Letter
+Query ref: QRY-400-1
+Date: 10-Mar-2025
+Claim reference: FX-CLM-400
+Please provide:
+1. Original discharge summary, duly signed by the treating doctor.
+2. Hospital bill dated 14-Feb-2025.
+3. Signed prescription.

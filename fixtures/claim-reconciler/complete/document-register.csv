@@ -1,0 +1,4 @@
+item,form,signature,date,bill_type,reference_no,pages,submission_ref
+Discharge summary,original,signed,05-Mar-2025,,,1,SUB-90001
+Hospital bill,original,signed,06-Mar-2025,itemised,HB-6001,1,SUB-90001
+ID proof,copy,,03-Mar-2025,,,1,SUB-90001

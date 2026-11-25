@@ -1,0 +1,5 @@
+ID PROOF (KYC)
+Name: Ravi Sharma (fictional)
+Document: Voter ID, self-attested
+Status: SELF-ATTESTED COPY
+Date: 03-Mar-2025

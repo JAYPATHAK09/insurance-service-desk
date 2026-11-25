@@ -1,0 +1,7 @@
+Bluebird Health - Claim Query Letter
+Query ref: QRY-500-1
+Date: 10-Mar-2025
+Claim reference: FX-CLM-500
+Please provide:
+1. Original discharge summary, duly signed by the treating doctor.
+2. Itemised hospital bill no. HB-6005.

@@ -1,0 +1,6 @@
+ITEMISED HOSPITAL BILL
+Bill no: HB-6006
+Date: 06-Mar-2025
+Bill type: Itemised
+Total charges: INR 22,750
+Page 1 of 1

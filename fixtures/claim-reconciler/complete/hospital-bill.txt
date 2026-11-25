@@ -1,0 +1,7 @@
+ITEMISED HOSPITAL BILL
+Bill no: HB-6001
+Date: 06-Mar-2025
+Bill type: Itemised
+Room charges, 3 days: INR 9,000
+Medicines: INR 4,200
+Page 1 of 1
