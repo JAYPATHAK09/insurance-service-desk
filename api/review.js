@@ -13,7 +13,14 @@ export default async function handler(req,res){
  const body=req.body||{},token=process.env.DESK_PASSWORD;
  if(!token&&(process.env.VERCEL||process.env.DATABASE_URL||process.env.ANTHROPIC_API_KEY))return res.status(503).json({error:'Configure DESK_PASSWORD first.'});
  if(token&&!timingSafeEqual(hash(token),hash(String(req.headers['x-desk-password']||''))))return res.status(401).json({error:'Enter the workspace password.'});
- if(req.method==='GET')return res.json({history:process.env.DATABASE_URL?await sql('SELECT id, agent, mode, findings, created_at FROM desk_agent_reviews ORDER BY created_at DESC LIMIT 30'):[],database:!!process.env.DATABASE_URL});
+ if(req.method==='PATCH'){
+  if(!process.env.DATABASE_URL)throw Error('Connect Neon to record decisions.');
+  const {id,decision,note}=body;
+  if(!['Needs follow-up','Verified','Reopened'].includes(decision)||typeof note!=='string'||!note.trim()||note.length>2000)throw Error('Choose a decision and enter a note of up to 2,000 characters.');
+  const [action]=await sql('INSERT INTO desk_review_actions(id,review_id,decision,note) VALUES($1,$2,$3,$4) RETURNING decision,note,created_at',[randomUUID(),id,decision,note.trim()]);
+  return res.json(action);
+ }
+ if(req.method==='GET')return res.json({history:process.env.DATABASE_URL?await sql(`SELECT r.*, COALESCE((SELECT jsonb_agg(jsonb_build_object('decision',d.decision,'note',d.note,'created_at',d.created_at) ORDER BY d.created_at) FROM desk_review_actions d WHERE d.review_id=r.id),'[]'::jsonb) AS actions FROM desk_agent_reviews r ORDER BY r.created_at DESC LIMIT 30`):[],database:!!process.env.DATABASE_URL});
  if(req.method!=='POST')return res.status(405).json({error:'Unsupported method'});
  const {agent,a,b,mode}=body;
  if(!modes.includes(agent)||!['rules','claude'].includes(mode)||![a,b].every(x=>typeof x==='string'&&x.trim()&&x.length<=30000))throw Error('Select a tool and supply two source texts under 30,001 characters each.');
