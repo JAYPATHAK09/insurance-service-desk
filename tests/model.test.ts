@@ -28,11 +28,77 @@ const base = (over: Partial<Finding>): Finding => ({
 describe('verifyCitations', () => {
   it('verifies a quote across whitespace differences on the cited page', () => {
     const [f] = verifyCitations(
-      [base({ evidence: [{ doc_id: 'd1', page: 1, quote: 'Discharge summary: copy, unsigned', verified: false }] })],
+      [base({
+        attributes: { item_text: 'Discharge summary' },
+        evidence: [{ doc_id: 'd1', page: 1, quote: 'Discharge summary: copy, unsigned', verified: false }],
+      })],
       [doc],
     );
     expect(f!.evidence[0]!.verified).toBe(true);
     expect(f!.classification).toBe('satisfied_pending_verification');
+  });
+
+  describe('minimum quote length (M2)', () => {
+    const long: DocumentRecord = {
+      ...doc,
+      pages: [{ page: 1, text: 'Bill no. HB-6001 dated 06-Mar-2025. Total payable Rs 42,000. Signed by the billing officer.', ocr_status: 'not_needed' }],
+    };
+    const ev = (quote: string) => [{ doc_id: 'd1', page: 1, quote, verified: false }];
+
+    it('a short quote cannot carry a positive finding on its own, even though it is on the page', () => {
+      const [f] = verifyCitations([base({ classification: 'partially_satisfied', evidence: ev('Signed') })], [long]);
+      expect(f!.classification).toBe('ambiguous');
+      expect(f!.attributes).toMatchObject({ downgradedFrom: 'partially_satisfied', downgradeReason: 'quote_too_short' });
+    });
+
+    it('19 characters fail and 20 pass; whitespace is normalised before counting', () => {
+      const q20 = 'Total payable Rs 42,'; // 20 chars
+      expect(q20).toHaveLength(20);
+      const [short] = verifyCitations([base({ classification: 'partially_satisfied', evidence: ev(q20.slice(0, 19)) })], [long]);
+      const [ok] = verifyCitations([base({ classification: 'partially_satisfied', evidence: ev(q20) })], [long]);
+      const [spaced] = verifyCitations([base({ classification: 'partially_satisfied', evidence: ev('Total   payable\n Rs  42,') })], [long]);
+      expect(short!.classification).toBe('ambiguous');
+      expect(ok!.classification).toBe('partially_satisfied');
+      expect(spaced!.classification).toBe('partially_satisfied');
+    });
+
+    it('a short quote is accepted when the whole page is shorter than the minimum', () => {
+      const tiny: DocumentRecord = { ...doc, pages: [{ page: 1, text: 'Status: signed', ocr_status: 'not_needed' }] };
+      const [f] = verifyCitations([base({ classification: 'partially_satisfied', evidence: ev('Status: signed') })], [tiny]);
+      expect(f!.classification).toBe('partially_satisfied');
+    });
+
+    it('short context lines are fine next to a substantial quote; absence findings may cite short context', () => {
+      const [f] = verifyCitations([base({ classification: 'partially_satisfied', evidence: [...ev('Total payable Rs 42,000.'), ...ev('Signed')] })], [long]);
+      expect(f!.classification).toBe('partially_satisfied');
+      const [m] = verifyCitations([base({ classification: 'missing', evidence: ev('Signed') })], [long]);
+      expect(m!.classification).toBe('missing');
+    });
+  });
+
+  describe('satisfied_pending_verification must cite the item or a document reference', () => {
+    const page: DocumentRecord = {
+      ...doc,
+      pages: [{ page: 1, text: 'Hospital copy of the discharge summary is attached to this file for review purposes.', ocr_status: 'not_needed' }],
+    };
+    const ev = (quote: string) => [{ doc_id: 'd1', page: 1, quote, verified: false }];
+
+    it('downgrades a long but unrelated quote', () => {
+      const [f] = verifyCitations([base({ attributes: { item_text: 'Itemised hospital bill' }, evidence: ev('is attached to this file for review purposes') })], [page]);
+      expect(f!.classification).toBe('ambiguous');
+      expect(f!.attributes).toMatchObject({ downgradeReason: 'quote_not_tied_to_item' });
+    });
+
+    it('accepts a quote containing the item text', () => {
+      const [f] = verifyCitations([base({ attributes: { item_text: 'discharge summary' }, evidence: ev('copy of the discharge summary is attached') })], [page]);
+      expect(f!.classification).toBe('satisfied_pending_verification');
+    });
+
+    it('accepts a quote containing a document reference', () => {
+      const refDoc: DocumentRecord = { ...doc, pages: [{ page: 1, text: 'Hospital bill HB-6001 was submitted under SUB-90001 on 06-Mar-2025.', ocr_status: 'not_needed' }] };
+      const [f] = verifyCitations([base({ evidence: [{ doc_id: 'd1', page: 1, quote: 'Hospital bill HB-6001 was submitted', verified: false }] })], [refDoc]);
+      expect(f!.classification).toBe('satisfied_pending_verification');
+    });
   });
 
   it('downgrades to ambiguous when the quote is not on the cited page (wrong page, invented, failed OCR, unknown doc)', () => {

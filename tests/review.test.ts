@@ -17,7 +17,7 @@ describe('runReview', () => {
     const c = await makeCase(U.handlerA.id);
     const { document } = await ingestDocument(db, { caseId: c.id, filename: 'a.txt', bytes: bytes('Discharge summary: copy, unsigned') }, { storage: new MemoryStorage(), ocr: new SyntheticOcrAdapter(async () => null) });
     const produced: Finding[] = [
-      { key: 'good', type: 't', classification: 'partially_satisfied', summary: 's', evidence: [{ doc_id: document.id, page: 1, quote: 'copy, unsigned', verified: false }] },
+      { key: 'good', type: 't', classification: 'partially_satisfied', summary: 's', evidence: [{ doc_id: document.id, page: 1, quote: 'Discharge summary: copy, unsigned', verified: false }] },
       { key: 'invented', type: 't', classification: 'satisfied_pending_verification', summary: 's', evidence: [{ doc_id: document.id, page: 1, quote: 'signed original attached', verified: false }] },
     ];
     const spy = vi.spyOn(claimReconciler, 'run').mockResolvedValue(produced);

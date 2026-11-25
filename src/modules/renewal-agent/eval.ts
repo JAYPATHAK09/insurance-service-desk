@@ -93,7 +93,7 @@ export async function runEval(opts: { write?: boolean; root?: string } = {}): Pr
       // Citations: each expected quote must be present at the expected page and verified.
       for (const [file, page, quote] of e.quotes) {
         det.citation.expectedQuotes++;
-        const hit = f?.evidence.find((x) => fileOf(x.doc_id) === file && x.page === page && normaliseForMatch(x.quote) === normaliseForMatch(quote));
+        const hit = f?.evidence.find((x) => fileOf(x.doc_id) === file && x.page === page && normaliseForMatch(x.quote).includes(normaliseForMatch(quote))); // short lines are widened with neighbours, so containment
         if (hit?.verified) det.citation.correct++;
         else det.citation.missing.push({ case: c.name, key: e.key, quote, reason: !f ? 'finding missing' : !hit ? 'quote not cited at that page' : 'cited but not verified' });
       }

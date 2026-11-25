@@ -2,6 +2,7 @@ import { z } from 'zod';
 import { CLASSIFICATIONS, type DocumentRecord, type Finding, type ModelProvider, type ModelRequest, type ModuleEngine } from '@/lib/contracts';
 import { runModelTask } from '@/lib/model';
 import { registerSyntheticHandler } from '@/lib/model/providers';
+import { widenShortQuotes } from '@/lib/model/verify';
 import { analyse, type RawFinding } from './compare';
 import { roleOfKind } from './extract';
 import { slug } from './parse';
@@ -160,7 +161,12 @@ const toFinding = (r: RawFinding): Finding => ({
 async function run(_caseId: string, docs: DocumentRecord[], provider: ModelProvider): Promise<Finding[]> {
   const raw = toRoleDocs(docs);
   const req = buildRequest(raw);
-  if (provider.mode === 'synthetic') return runModelTask(provider, req, CLASSIFICATIONS['renewal-agent']);
+  if (provider.mode === 'synthetic') {
+    // Rule-engine quotes are whole lines and can be very short ("Co-payment: 0%"): widen them with the
+    // neighbouring lines so they meet the verifier's minimum. Model output is never widened.
+    const found = await runModelTask(provider, req, CLASSIFICATIONS['renewal-agent']);
+    return found.map((f) => ({ ...f, evidence: widenShortQuotes(f.evidence, docs) }));
+  }
 
   // Live: the structural checks are deterministic and run first. A mismatched or unverifiable pair never reaches the model.
   const a = analyse(raw);
